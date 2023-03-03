@@ -1,0 +1,9 @@
+keys: &all
+  - &homezone age1w9dzs3khqm78dp8eadnlpc2ejc2gp6lvp5c3968d78s372p3nq2s2axayx
+  - &homezone_ssh age1kturewtq9de992wj4nmcwu4nf5qcfnl68kvpus3pkds769ldjpcsk6hg4m
+  - &kables age1zstyfpzyuvh9umcqp5cs3tzzuu3s8lwu0xjz4wed053fsvsmq9hqnssyy0
+creation_rules:
+  - path_regex: secrets[\.enc]?\.yml$
+    key_groups:
+      - age: *all
+  - path_regex: .*
