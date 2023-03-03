@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Enable the OpenSSH daemon.
@@ -6,7 +6,7 @@
   	enable = true;
 	settings = {
 		PermitRootLogin = "no";
-		PasswordAuthentication = false;
+		PasswordAuthentication = lib.mkDefault false;
 	};
 	#kdbInteractiveAuthentication = false;
   };

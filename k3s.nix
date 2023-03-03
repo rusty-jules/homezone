@@ -5,7 +5,7 @@
 	  ./encryption.nix
 	];
 
-	networking.firewall.allowedTCPPorts = [ 6443 ];
+	networking.firewall.allowedTCPPorts = lib.mkDefault [ 6443 ];
 
 	boot.kernel.sysctl."net.ipv6.conf.wlp4s0.accept_ra" = 2;
 

@@ -2,7 +2,6 @@
 
 {
   imports = [ 
-      ./boot.nix
       ./wifi.nix
       ./node.nix
       ./ssh.nix
