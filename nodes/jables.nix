@@ -25,6 +25,8 @@
 	prefixLength = 24;
   }];
 
+  services.logind.lidSwitch = "ignore";
+
   system.copySystemConfiguration = false;
   system.stateVersion = "22.11";
 }
