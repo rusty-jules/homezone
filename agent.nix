@@ -1,12 +1,12 @@
 { config, pkgs, lib, ... }:
 {
-	sops.secrets.k3s_node_token = { };
+	sops.secrets.k3s_node_token2 = { };
 	services.k3s = {
 		role = "agent";
-		tokenFile = lib.mkDefault config.sops.secrets.k3s_node_token.path;
-		serverAddr = lib.mkDefault "https://kables:6443";
+		tokenFile = lib.mkDefault config.sops.secrets.k3s_node_token2.path;
+		serverAddr = lib.mkDefault "https://jables:6443";
 		extraFlags = toString [
-			"--node-ip ${config.networking.homezone.currentHost.ipv6}"
+			"--node-ip ${config.networking.homezone.currentHost.ipv4}"
 		];
 	};
 }

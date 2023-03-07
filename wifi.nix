@@ -28,6 +28,7 @@
 		extraHosts = ''
 			192.168.1.69 kables
 			192.168.1.70 platy
+			192.168.1.71 jables
 		'';
 
 	};
