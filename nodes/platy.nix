@@ -36,6 +36,7 @@
   networking.firewall.allowedTCPPorts = [ 22 6443 ];
 
 
+  services.logind.lidSwitch = "ignore";
   services.openssh.enable = true;
 
   system.copySystemConfiguration = false;
