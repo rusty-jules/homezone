@@ -27,4 +27,10 @@ in
 		specialArgs = { inherit inputs; };
 		modules = commonModules ++ [ ../nodes/platy.nix ];
 	};
+
+	jables = nixosSystem {
+		inherit pkgs system;
+		specialArgs = { inherit inputs; };
+		modules = commonModules ++ [ ../nodes/jables.nix ];
+	};
 }
