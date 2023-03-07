@@ -13,6 +13,13 @@
 
   networking.hostName = "jables";
 
+  users.users.jables = {
+    isNormalUser = true;
+    initialPassword = "123pw";
+    extraGroups = [ "wheel" ];
+    packages = with pkgs; [];
+  };
+
   networking.interfaces.wlp2s0.ipv4.addresses = [{
 	address = "192.168.1.71";
 	prefixLength = 24;
