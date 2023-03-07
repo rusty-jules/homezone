@@ -6,7 +6,7 @@
 		tokenFile = lib.mkDefault config.sops.secrets.k3s_node_token.path;
 		serverAddr = lib.mkDefault "https://kables:6443";
 		extraFlags = toString [
-			"--node-ip ${config.networking.homezone.currentHost.ipv4}"
+			"--node-ip ${config.networking.homezone.currentHost.ipv6}"
 		];
 	};
 }

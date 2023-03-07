@@ -28,12 +28,16 @@
   	address = "192.168.1.70";
 	prefixLength = 24;
   }];
+  networking.interfaces.wlp1s0.ipv6.addresses = [{
+	address = "::192.168.1.70";
+	prefixLength = 64;
+  }];
 
   networking.firewall.allowedTCPPorts = [ 22 6443 ];
 
 
   services.openssh.enable = true;
-  services.openssh.settings.AllowPasswordAuthentication = true;
+
   system.copySystemConfiguration = false;
   system.stateVersion = "22.11";
 }
