@@ -16,6 +16,9 @@
 				"@wifi2_ssid@" = {
 					psk = "@wifi2_psk@";
 				};
+				"@wifi3_ssid@" = {
+					psk = "@wifi3_psk@";
+				};
 			};
 		};
 
@@ -24,6 +27,7 @@
 
 		extraHosts = ''
 			192.168.1.69 kables
+			192.168.1.70 platy
 		'';
 
 	};
