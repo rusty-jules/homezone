@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -41,9 +41,17 @@
 		}];
 	};
 
+	systemd.sleep.extraConfig = lib.concatStringsSep "\n" [
+		"AllowHibernation=no"
+		"AllowHybridSleep=no"
+		"AllowSuspendThenHibernate=no"
+	];
+
 	services = {
 		xserver.libinput.enable = true;
 		logind.lidSwitch = "ignore";
+		logind.lidSwitchDocked = "ignore";
+		logind.lidSwitchExternalPower = "ignore";
 		upower.ignoreLid = true;
 
 		openssh.enable = true;
