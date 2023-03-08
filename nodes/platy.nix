@@ -1,20 +1,21 @@
 { config, pkgs, ... }:
+
 {
   imports = [
     ./platy-hardware.nix
     ../agent.nix
   ];
 
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  # Define on which hard drive you want to install Grub.
-  boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
-
-  services.xserver.libinput.enable = true;
   time.timeZone = "America/Los_Angeles";
 
-  networking.hostName = "platy";
+  # Use the GRUB 2 boot loader.
+	boot.loader.grub = {
+		enable = true;
+		version = 2;
+		# Define on which hard drive you want to install Grub.
+		device = "/dev/sda";
+	};
+
 
   users.users.platy = {
     isNormalUser = true;
@@ -24,21 +25,36 @@
     ];
   };
 
-  networking.interfaces.wlp1s0.ipv4.addresses = [{
-  	address = "192.168.1.70";
-	prefixLength = 24;
-  }];
-  networking.interfaces.wlp1s0.ipv6.addresses = [{
-	address = "::192.168.1.70";
-	prefixLength = 64;
-  }];
+	networking = {
+		hostName = "platy";
 
-  networking.firewall.allowedTCPPorts = [ 22 6443 ];
+		firewal.allowedTCPPorts = [ 22 6443 ];
 
+		interfaces.wlp1s0.ipv4.addresses = [{
+			address = "192.168.1.70";
+			prefixLength = 24;
+		}];
 
-  services.logind.lidSwitch = "ignore";
-  services.openssh.enable = true;
+		interfaces.wlp1s0.ipv6.addresses = [{
+			address = "::192.168.1.70";
+			prefixLength = 64;
+		}];
+	};
 
-  system.copySystemConfiguration = false;
-  system.stateVersion = "22.11";
+	services = {
+		xserver.libinput.enable = true;
+		logind.lidSwitch = "ignore";
+		upower.ignoreLid = true;
+
+		openssh.enable = true;
+	};
+
+	programs = {
+		mosh.enable = true;
+	};
+
+	system = {
+		copySystemConfiguration = false;
+		stateVersion = "22.11";
+	};
 }

@@ -26,6 +26,7 @@
   }];
 
   services.logind.lidSwitch = "ignore";
+  programs.mosh.enable = true;
 
   system.copySystemConfiguration = false;
   system.stateVersion = "22.11";
