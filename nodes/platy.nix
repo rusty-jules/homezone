@@ -6,8 +6,6 @@
     ../k3s/agent.nix
   ];
 
-  time.timeZone = "America/Los_Angeles";
-
   # Use the GRUB 2 boot loader.
 	boot.loader.grub = {
 		enable = true;
@@ -15,7 +13,6 @@
 		# Define on which hard drive you want to install Grub.
 		device = "/dev/sda";
 	};
-
 
   users.users.platy = {
     isNormalUser = true;
@@ -26,6 +23,7 @@
   };
 
 	networking.hostName = "platy";
+
 	systemd.sleep.extraConfig = lib.concatStringsSep "\n" [
 		"AllowHibernation=no"
 		"AllowHybridSleep=no"
@@ -40,10 +38,6 @@
 		upower.ignoreLid = true;
 
 		openssh.enable = true;
-	};
-
-	programs = {
-		mosh.enable = true;
 	};
 
 	system = {

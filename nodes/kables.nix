@@ -5,19 +5,23 @@
     ../k3s/server.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.device = "/dev/sda";
-  # Set your time zone.
-  time.timeZone = "America/Los_Angeles";
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+    grub.device = "/dev/sda";
+  };
 
   networking.hostName = "kables";
 
-  # static local ip assumed by extraHosts for server lookup by other nodes
-  networking.interfaces.wlp4s0.ipv4.addresses = [{
-  	address = "192.168.1.69";
-	prefixLength = 24;
-  }];
+  users.users.mbp = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    packages = with pkgs; [
+    ];
+
+    createHome = true;
+    home = "/home/mbp";
+  };
 
   services.logind.lidSwitch = "ignore";
 

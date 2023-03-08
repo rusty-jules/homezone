@@ -6,6 +6,7 @@
 		./tmux.nix
 		./zsh.nix
 		./neovim.nix
+    ./mosh.nix
   ];
 
   environment.systemPackages = with pkgs; [

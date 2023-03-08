@@ -7,6 +7,8 @@ in
 {
 	sops.secrets."wifi.env" = { };
 
+  time.timeZone = "America/Los_Angeles";
+
 	networking = {
 		hostName = lib.mkDefault "nixos"; # Define your hostname. This should be overridden in nodes/${node}.nix
 

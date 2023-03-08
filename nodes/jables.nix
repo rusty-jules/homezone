@@ -6,10 +6,11 @@
     ../k3s/server.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.device = "/dev/nvme0n1";
-  time.timeZone = "America/Los_Angeles";
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+    grub.device = "/dev/nvme0n1";
+  };
 
   networking.hostName = "jables";
 
@@ -20,13 +21,7 @@
     packages = with pkgs; [];
   };
 
-  networking.interfaces.wlp2s0.ipv4.addresses = [{
-	address = "192.168.1.71";
-	prefixLength = 24;
-  }];
-
   services.logind.lidSwitch = "ignore";
-  programs.mosh.enable = true;
 
   system.copySystemConfiguration = false;
   system.stateVersion = "22.11";
