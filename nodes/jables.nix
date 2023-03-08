@@ -3,7 +3,7 @@
 {
   imports = [
     ./jables-hardware.nix
-    ../server.nix
+    ../k3s/server.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

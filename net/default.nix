@@ -32,8 +32,8 @@
 		'';
 
 	};
+
 	# deeper kube settings
 	#networking.dhcpcd.enable = false; # use networkd
 	#systemd.network.enable = false;
-
 }

@@ -2,7 +2,9 @@
 
 {
   imports = [
-    ./config/tmux.nix
+		./encryption.nix
+		./tmux.nix
+		./zsh.nix
   ];
 
   environment.systemPackages = with pkgs; [

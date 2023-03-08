@@ -3,7 +3,7 @@
 {
   imports = [
     ./platy-hardware.nix
-    ../agent.nix
+    ../k3s/agent.nix
   ];
 
   time.timeZone = "America/Los_Angeles";
