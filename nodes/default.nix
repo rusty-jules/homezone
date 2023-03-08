@@ -15,6 +15,13 @@ let
 				unique ipv6 address or none
 			'';
 		};
+
+		wifiInterfaceName = mkOption {
+			type = types.str;
+			description = ''
+				name of the wifi interface for this device
+			'';
+		};
 	};
 in
 {
@@ -37,13 +44,16 @@ in
 		networking.homezone.hosts = {
 			kables = {
 				ipv4 = "192.168.1.69";
+				wifiInterfaceName = "wlp4s0";
 			};
 			platy = {
 				ipv4 = "192.168.1.70";
 				ipv6 = "::192.168.1.70";
+				wifiInterfaceName = "wlp1s0";
 			};
 			jables = {
 				ipv4 = "192.168.1.71";
+				wifiInterfaceName = "wlp2s0";
 			};
 		};
 	};

@@ -25,22 +25,7 @@
     ];
   };
 
-	networking = {
-		hostName = "platy";
-
-		firewall.allowedTCPPorts = [ 22 6443 ];
-
-		interfaces.wlp1s0.ipv4.addresses = [{
-			address = "192.168.1.70";
-			prefixLength = 24;
-		}];
-
-		interfaces.wlp1s0.ipv6.addresses = [{
-			address = "::192.168.1.70";
-			prefixLength = 64;
-		}];
-	};
-
+	networking.hostName = "platy";
 	systemd.sleep.extraConfig = lib.concatStringsSep "\n" [
 		"AllowHibernation=no"
 		"AllowHybridSleep=no"
