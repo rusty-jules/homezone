@@ -53,7 +53,10 @@ in
 		# '';
 		extraHosts = lib.concatStringsSep "\n" (
 			map (name:
-				(name: host: "${host.ipv4} ${name}") name hosts.${name}
+        (name: host: ''
+          ${host.ipv4} ${name}
+          ${lib.optionalString (host.ipv6 != null) "${host.ipv6} ${name}"}
+        '') name hosts.${name}
 			) (builtins.attrNames hosts)
 		);
 	};
