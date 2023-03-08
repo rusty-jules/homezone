@@ -28,7 +28,7 @@
 	networking = {
 		hostName = "platy";
 
-		firewal.allowedTCPPorts = [ 22 6443 ];
+		firewall.allowedTCPPorts = [ 22 6443 ];
 
 		interfaces.wlp1s0.ipv4.addresses = [{
 			address = "192.168.1.70";
