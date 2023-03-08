@@ -5,6 +5,7 @@
 		./encryption.nix
 		./tmux.nix
 		./zsh.nix
+		./neovim.nix
   ];
 
   environment.systemPackages = with pkgs; [
@@ -14,7 +15,6 @@
     sd
     ripgrep
     bat
-    neovim
     vim
     wget
     curl
