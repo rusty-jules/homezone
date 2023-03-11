@@ -36,8 +36,6 @@
 		logind.lidSwitchDocked = "ignore";
 		logind.lidSwitchExternalPower = "ignore";
 		upower.ignoreLid = true;
-
-		openssh.enable = true;
 	};
 
 	system = {

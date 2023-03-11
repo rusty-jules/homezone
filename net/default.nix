@@ -5,6 +5,10 @@ let
 	hosts = config.networking.homezone.hosts;
 in
 {
+  imports = [
+    ./ssh.nix
+  ];
+
 	sops.secrets."wifi.env" = { };
 
   time.timeZone = "America/Los_Angeles";
@@ -12,7 +16,7 @@ in
 	networking = {
 		hostName = lib.mkDefault "nixos"; # Define your hostname. This should be overridden in nodes/${node}.nix
 
-		firewall.allowedTCPPorts = [ 22 6443 ];
+		firewall.allowedTCPPorts = [ 22 6443 80 443 ];
 
 		interfaces.${currentHost.wifiInterfaceName} = {
 			ipv4.addresses = [{

@@ -3,12 +3,11 @@
 {
   # Enable the OpenSSH daemon.
   services.openssh = {
-  	enable = true;
-	settings = {
-		PermitRootLogin = "no";
-		PasswordAuthentication = lib.mkDefault false;
-	};
-	#kdbInteractiveAuthentication = false;
+    enable = true;
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = lib.mkDefault false;
+    };
   };
 
   programs.ssh = {
