@@ -41,6 +41,13 @@ Update
 
 Be sure to set the proper `networking.hostName` in `<node-name>.nix` and use the networking interface output by `ip a`.
 
+Generate cache key
+```
+nix-store --generate-binary-cache-key ${name} cache-priv-key.pem cache-pub-key.pem
+nix store sign --all -k cache-priv-key.pem
+mv cache-*-key.pem /root
+```
+
 ### Update Secrets
 
 Run `ssh-to-age` on the public host ssh key and add it to `.sops.yml`, then updatekeys for `secrets.enc.yml`.
