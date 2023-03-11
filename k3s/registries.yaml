@@ -1,4 +1,4 @@
 mirrors:
-  jables:
+  zot.registries:
     endpoint:
       - "http://jables"
