@@ -2,3 +2,6 @@ mirrors:
   zot.registries:
     endpoint:
       - "http://jables"
+  nixery.registries:
+    endpoint:
+      - "http://nixery.registries.jables"
