@@ -24,6 +24,9 @@
 
   # write a k3s registries config file
   environment.etc = {
-    "rancher/k3s/registries.yaml".source = ./registries.yaml;
+    "rancher/k3s/registries.yaml" = {
+      source = ./registries.yaml;
+      mode = "0600";
+    };
   };
 }
