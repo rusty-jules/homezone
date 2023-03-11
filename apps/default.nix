@@ -20,5 +20,6 @@
     wget
     curl
     git
+    bottom
   ];
 }
