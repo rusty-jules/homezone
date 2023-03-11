@@ -46,12 +46,19 @@
     '';
   };
 
-  nix.buildMachines = [
+  nix.buildMachines = builtins.filter (host: host.hostName != config.networking.hostName) [
     {
       hostName = "platy";
       system = "x86_64-linux";
-      maxJobs = 10;
+      maxJobs = 4;
       speedFactor = 30; # cachix defaults to 40, so higher priority
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    }
+    {
+      hostName = "jables";
+      system = "x86_64-linux";
+      maxJobs = 2;
+      speedFactor = 15; # cachix defaults to 40, so higher priority
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     }
   ];
