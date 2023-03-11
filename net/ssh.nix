@@ -12,6 +12,7 @@
   };
 
   programs.ssh = {
+    startAgent = true;
     #knownHosts.platy = {
     #  hostNames = [ "platy" ];
     #  publicKey = "";
