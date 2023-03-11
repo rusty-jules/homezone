@@ -13,10 +13,10 @@
 
   programs.ssh = {
     startAgent = true;
-    #knownHosts.platy = {
-    #  hostNames = [ "platy" ];
-    #  publicKey = "";
-    #};
+    knownHosts.platy = {
+      hostNames = [ "platy" ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINQSWarpYNzA7f02cav7MNtpPN4y8QZJINXhiqef2C7u";
+    };
     knownHosts.jables = {
       hostNames = [ "jables" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMIfEIpmNYvgYq5o5gQaHyUbt2ajhBOWaxxZkU5+0Y3R";
@@ -67,7 +67,7 @@
     trusted-users = lib.attrNames config.networking.homezone.hosts;
     trusted-substituters = lib.attrNames config.networking.homezone.hosts;
     extra-trusted-public-keys = ''
-      jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM=
+      jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM= platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA=
     '';
   };
    
