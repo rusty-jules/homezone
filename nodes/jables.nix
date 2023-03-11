@@ -4,6 +4,7 @@
   imports = [
     ./jables-hardware.nix
     ../k3s/server.nix
+    ../net/ssh.nix
   ];
 
   boot.loader = {
