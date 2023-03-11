@@ -21,4 +21,9 @@
 
 	environment.systemPackages = [ pkgs.k3s pkgs.iptables ];
 	systemd.services.k3s.path = [ pkgs.ipset ];
+
+  # write a k3s registries config file
+  environment.etc = {
+    "rancher/k3s/registries.yaml".source = ./registries.yaml;
+  };
 }

@@ -1,0 +1,4 @@
+mirrors:
+  jables:
+    endpoint:
+      - "http://jables"
