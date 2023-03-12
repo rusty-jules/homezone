@@ -20,6 +20,10 @@
       hostNames = [ "jables" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMIfEIpmNYvgYq5o5gQaHyUbt2ajhBOWaxxZkU5+0Y3R";
     };
+    knownHosts.kables = {
+      hostNames = [ "kables" ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN06LyYzBNKJ4w/rtdFliB/7CSoaBZtZJd6LwviDIpa/";
+    };
     knownHosts.github = {
       hostNames = [ "github.com" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
@@ -38,6 +42,11 @@
         User platy
         IdentitiesOnly yes
         IdentityFile /etc/ssh/id_ed25519_homezone
+      Host kables
+        HostName kables
+        User kables
+        IdentitiesOnly yes
+        IdentityFile /etc/ssh/id_ed25519_homezone
       Host github
         HostName github.com
         User git
@@ -48,17 +57,24 @@
 
   nix.buildMachines = builtins.filter (host: host.hostName != config.networking.hostName) [
     {
-      hostName = "platy";
-      system = "x86_64-linux";
-      maxJobs = 4;
-      speedFactor = 30; # cachix defaults to 40, so higher priority
-      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-    }
-    {
       hostName = "jables";
       system = "x86_64-linux";
       maxJobs = 2;
       speedFactor = 15; # cachix defaults to 40, so higher priority
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    }
+    {
+      hostName = "platy";
+      system = "x86_64-linux";
+      maxJobs = 4;
+      speedFactor = 25;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    }
+    {
+      hostName = "kables";
+      system = "x86_64-linux";
+      maxJobs = 8;
+      speedFactor = 35;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     }
   ];
@@ -72,9 +88,11 @@
   nix.settings = {
     trusted-users = lib.attrNames config.networking.homezone.hosts;
     trusted-substituters = lib.attrNames config.networking.homezone.hosts;
-    extra-trusted-public-keys = ''
-      jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM= platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA=
-    '';
+    extra-trusted-public-keys = lib.concatStringsSep " " [
+      "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
+      "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
+      "kables:8u1N3KEwmzzVUyaknzjW3G1fjjcU3XQw5Ocj1S2Thlg="
+    ];
   };
    
 }
