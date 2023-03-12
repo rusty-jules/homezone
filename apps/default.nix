@@ -22,4 +22,8 @@
     git
     bottom
   ];
+
+  programs = {
+    light.enable = true;
+  };
 }
