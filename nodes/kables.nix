@@ -2,7 +2,7 @@
 {
   imports = [
     ./kables-hardware.nix
-    ../k3s/server.nix
+    ../k3s/agent.nix
   ];
 
   boot.loader = {
