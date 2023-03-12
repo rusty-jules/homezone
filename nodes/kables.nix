@@ -13,14 +13,22 @@
 
   networking.hostName = "kables";
 
-  users.users.mbp = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-    ];
-
-    createHome = true;
-    home = "/home/mbp";
+  users.users = {
+    mbp = {
+      isNormalUser = true;
+      extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+      createHome = true;
+      home = "/home/mbp";
+    };
+    kables = {
+      isNormalUser = true;
+      extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+      createHome = true;
+      home = "/home/kables";
+      openssh.authorizedKeys.keys = let
+        keys = import ../net/keys.nix;
+      in [ keys.homezone ];
+    };
   };
 
   services.logind.lidSwitch = "ignore";
