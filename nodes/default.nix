@@ -18,6 +18,7 @@ let
 
 		wifiInterfaceName = mkOption {
 			type = types.str;
+      default = null;
 			description = ''
 				name of the wifi interface for this device
 			'';
@@ -54,6 +55,9 @@ in
 			jables = {
 				ipv4 = "192.168.1.71";
 				wifiInterfaceName = "wlp2s0";
+			};
+			"nixery.registries.jables" = {
+				ipv4 = "192.168.1.71";
 			};
 		};
 	};
