@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, builtins, ... }:
 
 let
 	currentHost = config.networking.homezone.currentHost;
@@ -31,7 +31,7 @@ in
 		};
 
 		wireless = {
-			enable = true;  # Enables wireless support via wpa_supplicant.
+			enable = builtins.currentSystem != "armv7l-linux";  # Enables wireless support via wpa_supplicant.
 			userControlled.enable = true;
 			environmentFile = config.sops.secrets."wifi.env".path;
 			networks = {

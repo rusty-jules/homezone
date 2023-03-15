@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, builtins, ... }:
 
 {
   imports = [
@@ -12,16 +12,17 @@
   environment.systemPackages = with pkgs; [
     zsh
     tmux
-    fd
-    sd
-    ripgrep
-    bat
     vim
     wget
     curl
     git
+  ] ++ lib.optionals (builtins.currentSystem != "armv7l-linux") [
+    fd
+    sd
+    ripgrep
+    bat
     bottom
-  ];
+	];
 
   programs = {
     light.enable = true;

@@ -42,7 +42,7 @@ in
 			lib.optional (!(config.networking.homezone.hosts ? ${config.networking.hostName}))
 				"no network configuration for ${config.networking.hostName} found in ${./hosts.nix}";
 
-		networking.homezone.hosts = {
+		networking.homezone.hosts = rec {
 			kables = {
 				ipv4 = "192.168.1.69";
 				wifiInterfaceName = "wlp4s0";
@@ -56,8 +56,11 @@ in
 				ipv4 = "192.168.1.71";
 				wifiInterfaceName = "wlp2s0";
 			};
+			lamey = {
+				ipv4 = "192.168.1.72";
+			};
 			"nixery.registries.jables" = {
-				ipv4 = "192.168.1.71";
+				ipv4 = jables.ipv4;
 			};
 		};
 	};
