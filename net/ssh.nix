@@ -31,6 +31,10 @@
     knownHosts.homeZone = {
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOBhGVjzjavCel13AhBErB6wj3F6fbtpwqBfhWw2WnJ6";
     };
+    knownHosts.nixBuilds = {
+      hostNames = [ "eu.nixbuild.net" ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPIQCZc54poJ8vqawd8TraNryQeJnvH1eLpIDgbiqymM";
+    };
     extraConfig = ''
       Host platy
         HostName platy
@@ -52,6 +56,9 @@
         User git
         IdentitiesOnly yes
         IdentityFile /etc/ssh/id_ed25519_homezone
+      Host eu.nixbuild.net
+        PubkeyAcceptedKeyTypes ssh-ed25519
+        IdentityFile /home/pi/.ssh/id_ed25519_nixbuild
     '';
   };
 
@@ -77,6 +84,13 @@
       speedFactor = 35;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     }
+    {
+      hostName = "eu.nixbuild.net";
+      system = "armv7l-linux";
+      maxJobs = 100;
+      speedFactor = 35;
+      supportedFeatures = [ "benchmark" "big-parallel" ];
+    }
   ];
 
   nix.distributedBuilds = true;
@@ -87,12 +101,13 @@
 
   nix.settings = {
     trusted-users = lib.attrNames config.networking.homezone.hosts;
-    trusted-substituters = lib.attrNames config.networking.homezone.hosts;
+    substituters = lib.attrNames config.networking.homezone.hosts;
     extra-trusted-public-keys = lib.concatStringsSep " " [
       "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
       "kables:8u1N3KEwmzzVUyaknzjW3G1fjjcU3XQw5Ocj1S2Thlg="
+      "nixbuild.net/julianaichholz@gmail.com-1:BcMjG/fFSLmp3KxL+XvQhcHgMDEC3IHnhCv/AHTe9Ao="
     ];
   };
-   
+
 }

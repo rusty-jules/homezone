@@ -12,8 +12,11 @@
 	
 	# need to use non-default armv7l cache
 	nix.settings = {
-     substituters = lib.mkForce [ "https://cache.armv7l.xyz" ];
-     trusted-public-keys = [ "cache.armv7l.xyz-1:kBY/eGnBAYiqYfg0fy0inWhshUo+pGFM3Pj7kIkmlBk=" ];
+     extra-substituters = lib.mkForce [ "https://cache.armv7l.xyz" "ssh://eu.nixbuild.net" ];
+     extra-trusted-public-keys = lib.mkForce [
+       "cache.armv7l.xyz-1:kBY/eGnBAYiqYfg0fy0inWhshUo+pGFM3Pj7kIkmlBk="
+       "nixbuild.net/julianaichholz@gmail.com-1:BcMjG/fFSLmp3KxL+XvQhcHgMDEC3IHnhCv/AHTe9Ao="
+     ];
 	};
 
 	swapDevices = [
@@ -39,5 +42,5 @@
 	};
 
 	networking.hostName = "lamey";
-  system.stateVersion = "23.05"; # Did you read the comment?
+    system.stateVersion = "23.05"; # Did you read the comment?
 }
