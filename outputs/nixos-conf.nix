@@ -35,7 +35,10 @@ in
   };
 
   lamey = nixosSystem {
-    inherit pkgs;
+    pkgs = import inputs.nixpkgs {
+      system = "armv7l-linux";
+      config.allowUnfree = true;
+    };
     system = "armv7l-linux";
     specialArgs = { inherit inputs; };
     modules = commonModules ++ [ ../nodes/lamey.nix ];
