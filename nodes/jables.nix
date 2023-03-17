@@ -19,7 +19,7 @@
     isNormalUser = true;
     initialPassword = "123pw";
     extraGroups = [ "wheel" ];
-    packages = with pkgs; [];
+    packages = with pkgs; [ ];
   };
 
   services.logind.lidSwitch = "ignore";

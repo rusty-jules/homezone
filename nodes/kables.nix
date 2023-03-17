@@ -25,14 +25,16 @@
       extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
       createHome = true;
       home = "/home/kables";
-      openssh.authorizedKeys.keys = let
-        keys = import ../net/keys.nix;
-      in [ keys.homezone ];
+      openssh.authorizedKeys.keys =
+        let
+          keys = import ../net/keys.nix;
+        in
+        [ keys.homezone ];
     };
   };
 
   # nix settings, such as virtualization
-  boot.binfmt.emulatedSystems = [ "armv7l-linux" ]; 
+  boot.binfmt.emulatedSystems = [ "armv7l-linux" ];
 
   services.logind.lidSwitch = "ignore";
 

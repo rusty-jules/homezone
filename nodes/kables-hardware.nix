@@ -5,7 +5,8 @@
 
 {
   imports =
-    [ (modulesPath + "/hardware/network/broadcom-43xx.nix")
+    [
+      (modulesPath + "/hardware/network/broadcom-43xx.nix")
       (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
@@ -15,12 +16,14 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/be5984dc-64a5-4920-ba66-11da8205e41b";
+    {
+      device = "/dev/disk/by-uuid/be5984dc-64a5-4920-ba66-11da8205e41b";
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/BD7A-91B0";
+    {
+      device = "/dev/disk/by-uuid/BD7A-91B0";
       fsType = "vfat";
     };
 

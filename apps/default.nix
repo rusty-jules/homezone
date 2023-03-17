@@ -2,10 +2,10 @@
 
 {
   imports = [
-		./encryption.nix
-		./tmux.nix
-		./zsh.nix
-		./neovim.nix
+    ./encryption.nix
+    ./tmux.nix
+    ./zsh.nix
+    ./neovim.nix
     ./mosh.nix
   ];
 
@@ -22,7 +22,7 @@
     ripgrep
     bat
     bottom
-	];
+  ];
 
   programs = {
     light.enable = true;
