@@ -19,7 +19,7 @@
 		defaultSopsFile = ./secrets.enc.yml;
   };
 
-  system.copySystemConfiguration = lib.mkDefault true;
+  system.copySystemConfiguration = lib.mkDefault false;
 
   system.stateVersion = lib.mkDefault "22.11";
 }
