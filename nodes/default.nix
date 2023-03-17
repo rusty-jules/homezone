@@ -17,8 +17,8 @@ let
 		};
 
 		wifiInterfaceName = mkOption {
-			type = types.str;
-      default = null;
+			type = types.nullOr types.str;
+            default = null;
 			description = ''
 				name of the wifi interface for this device
 			'';

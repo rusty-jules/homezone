@@ -18,7 +18,8 @@ in
 
 		firewall.allowedTCPPorts = [ 22 6443 80 443 ];
 
-		interfaces.${currentHost.wifiInterfaceName} = {
+        interfaces = {
+          ${currentHost.wifiInterfaceName} = lib.mkIf (currentHost.wifiInterfaceName != null) {
 			ipv4.addresses = [{
 				address = currentHost.ipv4;
 				prefixLength = 24;
@@ -28,6 +29,7 @@ in
 				address = currentHost.ipv6;
 				prefixLength = 64;
 			}];
+          };
 		};
 
 		wireless = {

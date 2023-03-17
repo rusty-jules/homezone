@@ -1,10 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
 		./lamey-hardware.nix
-		../k3s/server.nix
-	];
+		../k3s/server.nix ];
 	
 	boot.loader = {
 		grub.enable = false; # uses U-boot configured by the initial image
@@ -26,9 +25,9 @@
 
 	boot.initrd.includeDefaultModules = false;
 	boot.initrd.kernelModules = [ "ext4" "mmc_block" ];
-	disabledModules = [
-		<nixpkgs/nixos/modules/profiles/all-hardware.nix>
-	];
+    #disabledModules = [
+	#	<nixpkgs/nixos/modules/profiles/all-hardware.nix>
+	#];
 
 	users.users.pi = {
 		isNormalUser = true;

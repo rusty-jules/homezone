@@ -33,4 +33,11 @@ in
 		specialArgs = { inherit inputs; };
 		modules = commonModules ++ [ ../nodes/jables.nix ];
 	};
+
+    lamey = nixosSystem {
+        inherit pkgs;
+        system = "armv7l-linux";
+		specialArgs = { inherit inputs; };
+		modules = commonModules ++ [ ../nodes/lamey.nix ];
+    };
 }

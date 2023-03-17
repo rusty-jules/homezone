@@ -21,6 +21,6 @@
 
   system.copySystemConfiguration = lib.mkDefault true;
 
-  system.stateVersion = "22.11";
+  system.stateVersion = lib.mkDefault "22.11";
 }
 
