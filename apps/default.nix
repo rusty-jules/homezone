@@ -1,4 +1,4 @@
-{ pkgs, lib, builtins, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [
@@ -16,7 +16,7 @@
     wget
     curl
     git
-  ] ++ lib.optionals (builtins.currentSystem != "armv7l-linux") [
+  ] ++ lib.optionals (pkgs.system != "armv7l-linux") [
     fd
     sd
     ripgrep
