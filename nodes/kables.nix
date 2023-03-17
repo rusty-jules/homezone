@@ -31,6 +31,9 @@
     };
   };
 
+  # nix settings, such as virtualization
+  boot.binfmt.emulatedSystems = [ "armv7l-linux" ]; 
+
   services.logind.lidSwitch = "ignore";
 
   system.copySystemConfiguration = false;
