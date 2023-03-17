@@ -24,6 +24,9 @@
 
   services.logind.lidSwitch = "ignore";
 
+  # thunderbolt 3 management
+  services.hardware.bolt.enable = true;
+
   system.copySystemConfiguration = false;
   system.stateVersion = "22.11";
 }
