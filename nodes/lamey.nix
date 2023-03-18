@@ -3,7 +3,6 @@
 {
   imports = [
     ./lamey-hardware.nix
-    ../k3s/server.nix
   ];
 
   boot.loader = {
@@ -29,9 +28,6 @@
 
   boot.initrd.includeDefaultModules = false;
   boot.initrd.kernelModules = [ "ext4" "mmc_block" ];
-  #disabledModules = [
-  #	<nixpkgs/nixos/modules/profiles/all-hardware.nix>
-  #];
 
   users.users.pi = {
     isNormalUser = true;

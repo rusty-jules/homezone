@@ -1,5 +1,6 @@
 { config, pkgs, lib, ... }:
 {
+  imports = [ ./base.nix ];
   sops.secrets.k3s_node_token2 = { };
   services.k3s = {
     role = "agent";

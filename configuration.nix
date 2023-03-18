@@ -4,7 +4,6 @@
   imports = [
     ./net
     ./nodes
-    ./k3s
     ./apps
     ./customization
   ];
