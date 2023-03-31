@@ -62,6 +62,9 @@ in
       "nixery.registries.jables" = {
         ipv4 = jables.ipv4;
       };
+      "zot.registry.jables" = {
+        ipv4 = jables.ipv4;
+      };
     };
   };
 }
