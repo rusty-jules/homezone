@@ -1,5 +1,11 @@
 { config, pkgs, lib, ... }:
 
+let
+  allHosts = lib.attrNames config.networking.homezone.hosts;
+  filterOwnHost = builtins.filter(host: host.hostName != config.networking.hostName);
+  filterOtherHosts = builtins.filter(host: host == config.networking.hostName);
+  filterOwnHostSubdomains = builtins.filter(host: ! builtins.elem config.networking.hostName (builtins.split "[.]" host));
+in
 {
   # Enable the OpenSSH daemon.
   services.openssh = {
@@ -62,7 +68,7 @@
     '';
   };
 
-  nix.buildMachines = builtins.filter (host: host.hostName != config.networking.hostName) [
+  nix.buildMachines = filterOwnHost [
     {
       hostName = "jables";
       system = "x86_64-linux";
@@ -100,8 +106,9 @@
   '';
 
   nix.settings = {
-    trusted-users = lib.attrNames config.networking.homezone.hosts;
-    substituters = lib.attrNames config.networking.homezone.hosts;
+    trusted-users = filterOtherHosts allHosts;
+    # filter out self and any subdomain hosts of self
+    substituters =  filterOwnHostSubdomains allHosts;
     extra-trusted-public-keys = lib.concatStringsSep " " [
       "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
