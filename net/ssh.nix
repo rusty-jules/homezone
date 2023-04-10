@@ -43,7 +43,7 @@
         IdentityFile /etc/ssh/id_ed25519_homezone
       Host jables
         HostName jables
-        User platy
+        User jables
         IdentitiesOnly yes
         IdentityFile /etc/ssh/id_ed25519_homezone
       Host kables
