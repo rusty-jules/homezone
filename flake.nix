@@ -25,7 +25,7 @@
         sshUser = "root";
         hostname = node;
         remoteBuild = true;
-        # fastConnection = true; # copy the entire closure to the node
+        fastConnection = true; # copy the entire closure to the node
         profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${node};
       }) {
         jables = {};

@@ -68,6 +68,7 @@ in
       map
         (name:
           (name: host: ''
+            #${lib.optionalString (host.etherIp != null) "${host.etherIp} ${name}"} # set ethernet address
             ${host.ipv4} ${name}
             ${lib.optionalString (host.ipv6 != null) "${host.ipv6} ${name}"}
           '') name
