@@ -4,7 +4,8 @@ let
   allHosts = lib.attrNames config.networking.homezone.hosts;
   filterOwnHost = builtins.filter(host: host.hostName != config.networking.hostName);
   filterOtherHosts = builtins.filter(host: host == config.networking.hostName);
-  filterOwnHostSubdomains = builtins.filter(host: ! builtins.elem config.networking.hostName (builtins.split "[.]" host));
+  filterSubdomains = builtins.filter(host: ! ((builtins.length (builtins.split "[.]" host)) > 1));
+  filterSelfAndLamey = builtins.filter(host: host != "lamey" && host != config.networking.hostName);
 in
 {
   # Enable the OpenSSH daemon.
@@ -108,7 +109,7 @@ in
   nix.settings = {
     trusted-users = filterOtherHosts allHosts;
     # filter out self and any subdomain hosts of self
-    substituters =  map(host: "ssh-ng://${host}") (builtins.filter(host: host != "lamey") (filterOwnHostSubdomains allHosts));
+    substituters =  map(host: "ssh-ng://${host}") (filterSelfAndLamey (filterSubdomains allHosts));
     extra-trusted-public-keys = lib.concatStringsSep " " [
       "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
