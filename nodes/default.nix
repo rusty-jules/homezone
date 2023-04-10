@@ -16,12 +16,22 @@ let
         			'';
     };
 
+    etherIp = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+    };
+
     wifiInterfaceName = mkOption {
       type = types.nullOr types.str;
       default = null;
       description = ''
         				name of the wifi interface for this device
         			'';
+    };
+
+    etherInterfaceName = mkOption {
+      type = types.nullOr types.str;
+      default = null;
     };
   };
 in
@@ -45,16 +55,22 @@ in
     networking.homezone.hosts = rec {
       kables = {
         ipv4 = "192.168.1.69";
+        etherIp = "10.0.0.69";
         wifiInterfaceName = "wlp4s0";
+        etherInterfaceName = "ens9";
       };
       platy = {
         ipv4 = "192.168.1.70";
+        etherIp = "10.0.0.70";
         ipv6 = "::192.168.1.70";
         wifiInterfaceName = "wlp1s0";
+        etherInterfaceName = "enp0s20u4";
       };
       jables = {
         ipv4 = "192.168.1.71";
+        etherIp = "10.0.0.71";
         wifiInterfaceName = "wlp2s0";
+        etherInterfaceName = "enp7s0u2";
       };
       lamey = {
         ipv4 = "192.168.1.72";

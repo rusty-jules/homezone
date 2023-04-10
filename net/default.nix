@@ -30,6 +30,13 @@ in
           prefixLength = 64;
         }];
       };
+
+      ${currentHost.etherInterfaceName} = lib.mkIf (currentHost.etherInterfaceName != null) {
+        ipv4.addresses = lib.mkIf (currentHost.etherIp != null) [{
+          address = currentHost.etherIp;
+          prefixLength = 24;
+        }];
+      };
     };
 
     wireless = {
