@@ -6,7 +6,7 @@
 
     nurpkgs.url = github:nix-community/NUR;
 
-    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.url = github:Mic92/sops-nix;
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = github:serokell/deploy-rs;
@@ -21,34 +21,16 @@
       nixosConfigurations =
         import ./outputs/nixos-conf.nix { inherit inputs system sops-nix; };
 
-      deploy.nodes = {
-        jables = {
-          sshUser = "root";
-          hostname = "jables";
-          remoteBuild = true;
-          profiles.system = {
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.jables;
-            remoteBuild = true;
-          };
-        };
-        kables = {
-          sshUser = "root";
-          hostname = "kables";
-          remoteBuild = true;
-          profiles.system = {
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.kables;
-            remoteBuild = true;
-          };
-        };
-        platy = {
-          sshUser = "root";
-          hostname = "platy";
-          remoteBuild = true;
-          profiles.system = {
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.platy;
-            remoteBuild = true;
-          };
-        };
+      deploy.nodes = mapAttrs(node: _: {
+        sshUser = "root";
+        hostname = node;
+        remoteBuild = true;
+        # fastConnection = true; # copy the entire closure to the node
+        profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${node};
+      }) {
+        jables = {};
+        kables = {};
+        platy = {};
       };
 
       checks =
