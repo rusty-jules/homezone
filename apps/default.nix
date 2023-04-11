@@ -16,12 +16,14 @@
     wget
     curl
     git
+    nushell
   ] ++ lib.optionals (pkgs.system != "armv7l-linux") [
     fd
     sd
     ripgrep
     bat
     bottom
+    dust
   ];
 
   programs = {
