@@ -23,7 +23,7 @@
     ripgrep
     bat
     bottom
-    dust
+    du-dust
   ];
 
   programs = {

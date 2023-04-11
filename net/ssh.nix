@@ -109,7 +109,7 @@ in
   nix.settings = {
     trusted-users = filterOtherHosts allHosts;
     # filter out self and any subdomain hosts of self
-    substituters =  map(host: "ssh-ng://${host}") (filterSelfAndLamey (filterSubdomains allHosts));
+    extra-substituters =  map(host: "ssh-ng://${host}") (filterSelfAndLamey (filterSubdomains allHosts));
     extra-trusted-public-keys = lib.concatStringsSep " " [
       "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
