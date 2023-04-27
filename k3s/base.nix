@@ -17,7 +17,11 @@
 
   security.polkit.enable = true;
 
-  services.k3s.enable = true;
+  services = {
+    k3s.enable = true;
+    # for longhorn
+    openiscsi.enable = true;
+  };
 
   environment.systemPackages = [ pkgs.k3s pkgs.iptables ];
   systemd.services.k3s.path = [ pkgs.ipset ];

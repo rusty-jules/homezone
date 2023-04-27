@@ -19,7 +19,7 @@
     nushell
     # apps required for additional k3s services
     # for longhorn
-    openiscsi
+    nfs-utils
   ] ++ lib.optionals (pkgs.system != "armv7l-linux") [
     fd
     sd
