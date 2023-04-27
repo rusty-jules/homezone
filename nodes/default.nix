@@ -33,6 +33,16 @@ let
       type = types.nullOr types.str;
       default = null;
     };
+
+    iscsiInitiatorName = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description= ''
+        iscsi initiator name generated with iscsi-iname.
+        required for each node in the cluster that will
+        use longhorn.
+      '';
+    };
   };
 in
 {
@@ -58,6 +68,7 @@ in
         etherIp = "10.0.0.69";
         wifiInterfaceName = "wlp4s0";
         etherInterfaceName = "ens9";
+        iscsiInitiatorName = "iqn.2016-04.com.open-iscsi:a1d73497bdb4";
       };
       platy = {
         ipv4 = "192.168.1.70";
@@ -65,12 +76,14 @@ in
         ipv6 = "::192.168.1.70";
         wifiInterfaceName = "wlp1s0";
         etherInterfaceName = "enp0s20u4";
+        iscsiInitiatorName = "iqn.2016-04.com.open-iscsi:3df2c416388d";
       };
       jables = {
         ipv4 = "192.168.1.71";
         etherIp = "10.0.0.71";
         wifiInterfaceName = "wlp2s0";
         etherInterfaceName = "enp7s0u2";
+        iscsiInitiatorName = "iqn.2016-04.com.open-iscsi:9a15bf737f1";
       };
       lamey = {
         ipv4 = "192.168.1.72";
