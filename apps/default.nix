@@ -17,6 +17,9 @@
     curl
     git
     nushell
+    # apps required for additional k3s services
+    # for longhorn
+    openiscsi
   ] ++ lib.optionals (pkgs.system != "armv7l-linux") [
     fd
     sd
