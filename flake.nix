@@ -15,9 +15,7 @@
   outputs = { self, nixpkgs, sops-nix, deploy-rs, ... } @ inputs:
     let
       system = "x86_64-linux";
-      overlays = import ./overlays;
       inherit (inputs.nixpkgs.lib) mapAttrs;
-      nixpkgs.overlays = [overlays];
     in
     rec {
       nixosConfigurations =
