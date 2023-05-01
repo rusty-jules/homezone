@@ -17,6 +17,7 @@
     curl
     git
     nushell
+    jq
     # apps required for additional k3s services
     # for longhorn
     nfs-utils
