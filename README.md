@@ -50,7 +50,7 @@ mv cache-*-key.pem /root
 
 ### Update Secrets
 
-Run `ssh-to-age` on the public host ssh key and add it to `.sops.yml`, then updatekeys for `secrets.enc.yml`.
+Run `ssh-to-age` on the public ed25519 host ssh key and add it to `.sops.yml`, then updatekeys for `secrets.enc.yml`.
 ```
 sops updatekeys secrets.enc.yml
 ```
