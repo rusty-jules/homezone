@@ -27,6 +27,15 @@ in
     root.openssh.authorizedKeys.keys = [ keys.homezone ];
 	};
 
+  # Authorize thunderbolt devices whenever they are plugged in witha udev rule
+  # https://discourse.nixos.org/t/thunderbolt-acl/2475
+  # Also nixpkgs#thunderbolt gives tbtadm which lists devices.
+  # Could potentially add specific devices to ACL
+  # https://christian.kellner.me/2019/02/11/thunderbolt-preboot-access-control-list-support-in-bolt/
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
+  '';
+
   services.logind.lidSwitch = "ignore";
 
   system.copySystemConfiguration = false;
