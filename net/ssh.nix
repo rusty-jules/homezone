@@ -33,7 +33,7 @@ in
     };
 		knownHosts.ljesus = {
 			hostNames = [ "ljesus" ];
-			publicKey = "";
+			publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVgM2lsCwP+C4wgCSQlG/nDYHvSng+56GF85eKQg2yk";
 		};
     knownHosts.github = {
       hostNames = [ "github.com" ];
@@ -130,6 +130,7 @@ in
       "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
       "kables:8u1N3KEwmzzVUyaknzjW3G1fjjcU3XQw5Ocj1S2Thlg="
+      "ljesus:Vn+qsG5/N0aqysMx+CxfuLOXLZtJz/vMZ2uCQZfLwiE="
       "nixbuild.net/julianaichholz@gmail.com-1:BcMjG/fFSLmp3KxL+XvQhcHgMDEC3IHnhCv/AHTe9Ao="
     ];
   };
