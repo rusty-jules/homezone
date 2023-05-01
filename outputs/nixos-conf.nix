@@ -34,6 +34,12 @@ in
     modules = commonModules ++ [ ../nodes/jables.nix ];
   };
 
+	ljesus = nixosSystem {
+		inherit pkgs system;
+		specialArgs = { inherit inputs; };
+		modules = commonModules ++ [ ../nodes/ljesus.nix ];
+  };
+
   lamey = nixosSystem {
     pkgs = import inputs.nixpkgs {
       system = "armv7l-linux";

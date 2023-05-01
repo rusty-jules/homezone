@@ -31,6 +31,10 @@ in
       hostNames = [ "kables" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN06LyYzBNKJ4w/rtdFliB/7CSoaBZtZJd6LwviDIpa/";
     };
+		knownHosts.ljesus = {
+			hostNames = [ "ljesus" ];
+			publicKey = "";
+		};
     knownHosts.github = {
       hostNames = [ "github.com" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
@@ -56,6 +60,11 @@ in
       Host kables
         HostName kables
         User kables
+        IdentitiesOnly yes
+        IdentityFile /etc/ssh/id_ed25519_homezone
+      Host ljesus
+        HostName ljesus
+        User ljesus
         IdentitiesOnly yes
         IdentityFile /etc/ssh/id_ed25519_homezone
       Host github
@@ -89,6 +98,13 @@ in
       system = "x86_64-linux";
       maxJobs = 8;
       speedFactor = 35;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    }
+    {
+      hostName = "ljesus";
+      system = "x86_64-linux";
+      maxJobs = 8;
+      speedFactor = 30;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     }
     {

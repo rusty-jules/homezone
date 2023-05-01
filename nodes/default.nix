@@ -85,6 +85,13 @@ in
         etherInterfaceName = "enp7s0u2";
         iscsiInitiatorName = "iqn.2016-04.com.open-iscsi:9a15bf737f1";
       };
+			ljesus = {
+				ipv4 = "10.0.0.72";
+				etherIp = "192.168.1.72";
+				wifiInterfaceName = "wlp4s0";
+				etherInterfaceName = "ens9";
+				iscsiInitiatorName = "iqn-2016-04.com.open-iscsi:a034333aa5";
+			};
       lamey = {
         ipv4 = "192.168.1.72";
       };
