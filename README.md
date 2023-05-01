@@ -13,9 +13,9 @@ Run normal installation and be sure to copy `hardware-configuration.nix` to a sa
 ### Copy Keys
 
 Mount USB and copy
-- github ssh key
-- homezone ssh key
-- age key
+- github ssh key > /root/.ssh
+- homezone ssh key > /root/.ssh
+- age key > /root/.config/sops/age/keys.txt
 
 ### Pull Repo
 Add the github ssh key
