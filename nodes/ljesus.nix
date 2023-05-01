@@ -1,4 +1,8 @@
 { config, pkgs, ... }:
+
+let
+  keys = import ../net/keys.nix;
+in
 {
   imports = [
     ./ljesus-hardware.nix
@@ -18,12 +22,9 @@
       extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
       createHome = true;
       home = "/home/ljesus";
-      openssh.authorizedKeys.keys =
-        let
-          keys = import ../net/keys.nix;
-        in
-        [ keys.homezone ];
+      openssh.authorizedKeys.keys = [ keys.homezone ];
   	};
+    root.openssh.authorizedKeys.keys = [ keys.homezone ];
 	};
 
   services.logind.lidSwitch = "ignore";
