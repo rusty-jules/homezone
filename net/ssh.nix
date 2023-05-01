@@ -125,13 +125,15 @@ in
   nix.settings = {
     trusted-users = filterOtherHosts allHosts;
     # filter out self and any subdomain hosts of self
-    extra-substituters =  map(host: "ssh-ng://${host}") (filterSelfAndLamey (filterSubdomains allHosts));
+    extra-substituters =  map(host: "ssh-ng://${host}") (filterSelfAndLamey (filterSubdomains allHosts))
+      ++ ["https://cuda-maintainers.cachix.org"];
     extra-trusted-public-keys = lib.concatStringsSep " " [
       "jables:oEzej0jJeG5bSVEmgYxmqmBYN/oiEQG4ng8xKaYCluM="
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
       "kables:8u1N3KEwmzzVUyaknzjW3G1fjjcU3XQw5Ocj1S2Thlg="
       "ljesus:Vn+qsG5/N0aqysMx+CxfuLOXLZtJz/vMZ2uCQZfLwiE="
       "nixbuild.net/julianaichholz@gmail.com-1:BcMjG/fFSLmp3KxL+XvQhcHgMDEC3IHnhCv/AHTe9Ao="
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
   };
 

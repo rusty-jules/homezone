@@ -7,6 +7,7 @@ in
   imports = [
     ./ljesus-hardware.nix
     ../k3s/agent.nix
+    ../apps/cuda.nix
   ];
 
   boot.loader = {
@@ -35,6 +36,20 @@ in
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
   '';
+
+  # Nvidia Hardware
+  # https://dataswamp.org/~solene/2021-12-05-nixos-egpu.html#_NixOS
+  # https://nixos.wiki/wiki/Nvidia
+  #hardware.nvidia = {
+  #  modesetting.enable = true;
+  #  prime = {
+  #    offload.enable = true;
+  #    allowExternalGpu = true;
+  #    # discovered with lspci + hex->decimal conversion
+  #    nvidiaBusId = "PCI:62:0:0"; # 3e:00.0
+  #    intelBusId = "PCI:0:2:0"; # 00:02.0
+  #  };
+  #};
 
   services.logind.lidSwitch = "ignore";
 
