@@ -4,7 +4,7 @@
     # cudatoolkit
     # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
     # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
-    # nvidia-container-toolkit-base
+    nvidia-container-toolkit
   ];
 
   # Nvidia Driver, GTX 1070 is not yet legacy!

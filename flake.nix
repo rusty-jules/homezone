@@ -15,13 +15,13 @@
   outputs = { self, nixpkgs, sops-nix, deploy-rs, ... } @ inputs:
     let
       system = "x86_64-linux";
-      overlays = import ./overlays;
+      nvidia-overlay = import ./overlays/nvidia.nix;
       inherit (inputs.nixpkgs.lib) mapAttrs;
-      nixpkgs.overlays = [overlays];
+      overlays = [nvidia-overlay];
     in
     rec {
       nixosConfigurations =
-        import ./outputs/nixos-conf.nix { inherit inputs system sops-nix; };
+        import ./outputs/nixos-conf.nix { inherit inputs system sops-nix overlays; };
 
       deploy.nodes = mapAttrs(node: _: {
         sshUser = "root";

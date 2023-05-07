@@ -1,10 +1,10 @@
-{ inputs, system, sops-nix, ... }:
+{ inputs, system, sops-nix, overlays, ... }:
 
 let
   inherit (inputs.nixpkgs.lib) nixosSystem;
 
   pkgs = import inputs.nixpkgs {
-    inherit system;
+    inherit system overlays;
     config = {
       allowUnfree = true;
     };
