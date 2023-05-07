@@ -7,7 +7,7 @@ in
   imports = [
     ./ljesus-hardware.nix
     ../k3s/agent.nix
-    #../apps/cuda.nix
+    ../apps/cuda.nix
   ];
 
   boot.loader = {

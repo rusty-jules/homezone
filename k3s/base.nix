@@ -36,4 +36,15 @@
       mode = "0600";
     };
   };
+
+  # So apparently k3s will config nvidia automatically
+  # https://docs.k3s.io/advanced#nvidia-container-runtime-support
+  #
+  # write the containerd config template file
+  # writing to /var/lib requires an activation script
+  # https://discourse.nixos.org/t/how-to-create-folder-in-var-lib-with-nix/15647
+  #containerdTemplate = pkgs.writeText "config.toml.tmpl" lib.readFile ./config.toml.tmpl;
+  #config.system.activationScripts.writeContainerdConfigTemplate = lib.stringAfter ["var"] ''
+  #  cp ${containerdTemplate} /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
+  #'';
 }

@@ -1,12 +1,10 @@
 { config, pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    cudatoolkit
-    # enable nvidia-docker, which is oddly defined in multiple places
-    # in nixpkgs. Guide here was great:
-    # https://sebastian-staffa.eu/posts/nvidia-docker-with-nix/
-    # https://github.com/NixOS/nixpkgs/blob/db3e8325a9b62b2b4fad0342f6835cb4ccc80c9b/pkgs/applications/virtualization/nvidia-docker/default.nix
-    nvidia-docker
+    # cudatoolkit
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
+    # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
+    # nvidia-container-toolkit-base
   ];
 
   # Nvidia Driver, GTX 1070 is not yet legacy!
