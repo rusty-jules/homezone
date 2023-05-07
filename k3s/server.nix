@@ -2,5 +2,8 @@
 {
   imports = [ ./base.nix ];
 
-  services.k3s.role = "server";
+  services.k3s = {
+    role = "server";
+    clusterInit = true;
+  };
 }
