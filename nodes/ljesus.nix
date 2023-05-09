@@ -11,22 +11,22 @@ in
   ];
 
   boot.loader = {
-		systemd-boot.enable = true;
-		efi.canTouchEfiVariables = true;
-  }; 
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
 
-	networking.hostName = "ljesus";
+  networking.hostName = "ljesus";
 
-	users.users = {
-		ljesus = {
+  users.users = {
+    ljesus = {
       isNormalUser = true;
       extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
       createHome = true;
       home = "/home/ljesus";
       openssh.authorizedKeys.keys = [ keys.homezone ];
-  	};
+    };
     root.openssh.authorizedKeys.keys = [ keys.homezone ];
-	};
+  };
 
   # Authorize thunderbolt devices whenever they are plugged in witha udev rule
   # https://discourse.nixos.org/t/thunderbolt-acl/2475
