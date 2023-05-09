@@ -66,7 +66,6 @@ in
       # match the version of linux installed...selecting that will make this able
       # to actually be added to upstream
       linuxKernel.packages.linux_5_15.nvidia_x11_production
-      cudaPackages.cuda_nvml_dev
     ];
 
     prePatch = ''

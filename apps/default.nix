@@ -18,6 +18,7 @@
     git
     nushell
     jq
+    pciutils
   ] ++ lib.optionals (pkgs.system != "armv7l-linux") [
     fd
     sd
