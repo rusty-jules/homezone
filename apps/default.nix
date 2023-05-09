@@ -18,12 +18,6 @@
     git
     nushell
     jq
-    # apps required for additional k3s services
-    # for longhorn
-    nfs-utils
-    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
-    # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
-    nvidia-container-toolkit
   ] ++ lib.optionals (pkgs.system != "armv7l-linux") [
     fd
     sd
@@ -31,6 +25,12 @@
     bat
     bottom
     du-dust
+    # apps required for additional k3s services
+    # for longhorn
+    nfs-utils
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
+    # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
+    nvidia-container-toolkit
   ];
 
   programs = {

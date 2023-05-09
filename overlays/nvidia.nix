@@ -48,6 +48,7 @@ in
     ];
 
     nativeBuildInputs = with super.pkgs; [
+      autoPatchelfHook
       bmake
       gnum4
       git
@@ -57,6 +58,15 @@ in
       rpcsvc-proto
       stdenv
       which
+    ];
+
+    runtimeDependencies = with super.pkgs; [
+      # I have no idea which "linux_{flavor}" applies since the installed version
+      # was "selected" by services.xerver.videoDrivers, but I assume it needs to
+      # match the version of linux installed...selecting that will make this able
+      # to actually be added to upstream
+      linuxKernel.packages.linux_5_15.nvidia_x11_production
+      cudaPackages.cuda_nvml_dev
     ];
 
     prePatch = ''
@@ -72,6 +82,8 @@ in
       export GOPATH=$NIX_BUILD_TOP/go
       make
     '';
+
+    dontStrip = true;
 
     installPhase = ''
       # ensure we do not use bmake, which was required for elftoolchain,
