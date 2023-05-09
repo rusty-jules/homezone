@@ -10,7 +10,7 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "sdhci_pci" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" "wl" ];
+  boot.kernelModules = [ "kvm-intel" "wl" "nvidia" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
   # required for broadcom-sta
   nixpkgs.config.allowUnfree = true;
