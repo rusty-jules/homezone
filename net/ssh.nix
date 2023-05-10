@@ -31,10 +31,14 @@ in
       hostNames = [ "kables" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN06LyYzBNKJ4w/rtdFliB/7CSoaBZtZJd6LwviDIpa/";
     };
-		knownHosts.ljesus = {
-			hostNames = [ "ljesus" ];
-			publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVgM2lsCwP+C4wgCSQlG/nDYHvSng+56GF85eKQg2yk";
-		};
+    knownHosts.ljesus = {
+      hostNames = [ "ljesus" ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICVgM2lsCwP+C4wgCSQlG/nDYHvSng+56GF85eKQg2yk";
+    };
+    knownHosts.belakay = {
+      hostNames = [ "belakay" ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBd/dTApdNoceIt1gD7gBPx4UdOnjgAJ+aPd95uc1LUA";
+    };
     knownHosts.github = {
       hostNames = [ "github.com" ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
@@ -65,6 +69,11 @@ in
       Host ljesus
         HostName ljesus
         User ljesus
+        IdentitiesOnly yes
+        IdentityFile /etc/ssh/id_ed25519_homezone
+      Host belakay
+        HostName belakay
+        User belakay
         IdentitiesOnly yes
         IdentityFile /etc/ssh/id_ed25519_homezone
       Host github
@@ -108,6 +117,13 @@ in
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     }
     {
+      hostName = "belakay";
+      system = "x86_64-linux";
+      maxJobs = 4;
+      speedFactor = 25;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    }
+    {
       hostName = "eu.nixbuild.net";
       system = "armv7l-linux";
       maxJobs = 100;
@@ -132,6 +148,7 @@ in
       "platy:k6u4eQnT9RYVsMTYnwkhbbypta6okLp1wwpk8q90TLA="
       "kables:8u1N3KEwmzzVUyaknzjW3G1fjjcU3XQw5Ocj1S2Thlg="
       "ljesus:Vn+qsG5/N0aqysMx+CxfuLOXLZtJz/vMZ2uCQZfLwiE="
+      "belakay:65YHc0CRr2so9tNY3s8FYk1tnAvAzhNs8YKLcy01wNQ="
       "nixbuild.net/julianaichholz@gmail.com-1:BcMjG/fFSLmp3KxL+XvQhcHgMDEC3IHnhCv/AHTe9Ao="
       "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];

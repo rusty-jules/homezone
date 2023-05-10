@@ -34,6 +34,7 @@
         kables = {};
         platy = {};
         ljesus = {};
+	belakay = {};
       };
 
       checks =

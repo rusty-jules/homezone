@@ -34,10 +34,16 @@ in
     modules = commonModules ++ [ ../nodes/jables.nix ];
   };
 
-	ljesus = nixosSystem {
-		inherit pkgs system;
-		specialArgs = { inherit inputs; };
-		modules = commonModules ++ [ ../nodes/ljesus.nix ];
+  ljesus = nixosSystem {
+    inherit pkgs system;
+    specialArgs = { inherit inputs; };
+    modules = commonModules ++ [ ../nodes/ljesus.nix ];
+  };
+
+  belakay = nixosSystem {
+    inherit pkgs system;
+    specialArgs = { inherit inputs; };
+    modules = commonModules ++ [ ../nodes/belakay.nix ];
   };
 
   lamey = nixosSystem {
