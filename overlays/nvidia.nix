@@ -13,6 +13,9 @@ let
   };
 in
 {
+  # FIXME: Need to wrap this program or patch such that
+  # `ldconfig -C /tmp/ld.so.cache` is created every time
+  # this is run
   nvidia-container-toolkit = super.stdenv.mkDerivation {
     pname = "nvidia-container-toolkit";
     version = "1.13.1";
@@ -67,6 +70,13 @@ in
       # to actually be added to upstream
       linuxKernel.packages.linux_5_15.nvidia_x11_production
     ];
+
+    prePatch = ''
+      substituteInPlace src/nvc_internal.h --replace "libnvidia-container-go.so.1" \
+        "$out/lib/libnvidia-container-go.so.1"
+      substituteInPlace src/nvc_ldcache.c --replace "/etc/ld.so.conf" "/tmp/ld.so.conf"
+      substituteInPlace src/nvc_ldcache.c src/common.h --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
+    '';
 
     patches = [ ./remove-curls.patch ];
 
