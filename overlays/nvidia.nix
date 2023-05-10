@@ -68,20 +68,15 @@ in
       linuxKernel.packages.linux_5_15.nvidia_x11_production
     ];
 
-    prePatch = ''
-      substituteInPlace Makefile --replace \
-      "/usr/local" \
-      $out/usr/local
-    '';
-
     patches = [ ./remove-curls.patch ];
 
     buildPhase = ''
       export GOCACHE=$NIX_BUILD_TOP/.cache
       export GOPATH=$NIX_BUILD_TOP/go
-      make
+      make prefix=$out/usr/local
     '';
 
+    # for autoPatchelfHook
     dontStrip = true;
 
     installPhase = ''
