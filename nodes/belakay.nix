@@ -7,7 +7,7 @@ in
   imports = [
     ./belakay-hardware.nix
     ../k3s/ha-server.nix
-    #../apps/cuda.nix
+    ../apps/cuda.nix
   ];
 
   boot.loader = {
