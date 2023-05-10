@@ -5,6 +5,7 @@ keys: &all
   - &platy age1qkvhr9x4c0qtj55tta0q3kap2tyerr9skyau69edxl9rse49ufzqv4k9xr
   - &jables age1ef8xuweecsd33g3vw5jk4twl8kp32cnjegyfh7905pr93lmzr5hqtq39vs
   - &ljesus age1npv3gr6euphu9mw329z2czndqn7kzycazaw0xdcptkkz6zkrhpvqvvakzj
+  - &belakay age1c8y06yfugk5kcq0w7utwmullyjpa2yvq336lp72wkrzftnz42suqhv5tkk
 creation_rules:
   - path_regex: secrets[\.enc]?\.yml$
     key_groups:
