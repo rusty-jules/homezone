@@ -6,7 +6,7 @@ in
 {
   imports = [
     ./belakay-hardware.nix
-    ../k3s/agent.nix
+    ../k3s/ha-server.nix
     #../apps/cuda.nix
   ];
 

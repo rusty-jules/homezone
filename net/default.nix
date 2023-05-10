@@ -16,7 +16,7 @@ in
   networking = {
     hostName = lib.mkDefault "nixos"; # Define your hostname. This should be overridden in nodes/${node}.nix
 
-    firewall.allowedTCPPorts = [ 22 6443 80 443 ];
+    firewall.allowedTCPPorts = [ 22 6443 80 443 2379 2380 ];
 
     interfaces = {
       ${currentHost.wifiInterfaceName} = lib.mkIf (currentHost.wifiInterfaceName != null) {
