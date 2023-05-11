@@ -4,6 +4,9 @@
 
   services.k3s = {
     role = "server";
-    clusterInit = true;
+    # This was needed for the initial etcd bootstrap, but subsequent
+    # starts of k3s (admittedly after a node crash) did not function
+    # with this flag enabled
+    #clusterInit = true;
   };
 }
