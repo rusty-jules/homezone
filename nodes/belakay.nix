@@ -13,10 +13,10 @@ in
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
-  }; 
+  };
 
   networking.hostName = "belakay";
-  
+
   users.users = {
     belakay = {
       isNormalUser = true;
