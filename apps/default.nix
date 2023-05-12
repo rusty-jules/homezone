@@ -5,6 +5,7 @@
     ./encryption.nix
     ./tmux.nix
     ./zsh.nix
+    ./bash.nix
     ./neovim.nix
     ./mosh.nix
   ];
@@ -26,6 +27,7 @@
     bat
     bottom
     du-dust
+    exa
     # apps required for additional k3s services
     # for longhorn
     nfs-utils
