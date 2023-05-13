@@ -28,6 +28,11 @@ in
     root.openssh.authorizedKeys.keys = [ keys.homezone ];
   };
 
+  networking.defaultGateway = {
+    address = "192.168.1.1";
+    interface = config.networking.homezone.currentHost.etherInterfaceName; 
+  };
+
   system.copySystemConfiguration = false;
   system.stateVersion = "22.11";
 }
