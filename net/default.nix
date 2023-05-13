@@ -69,6 +69,7 @@ in
         (name:
           (name: host: ''
             #${lib.optionalString (host.etherIp != null) "${host.etherIp} ${name}"} # set ethernet address
+            ${lib.optionalString (name == "ljesus") "${host.etherIp} ${name}"} # ljesus needs etherIp to be primary
             ${host.ipv4} ${name}
             ${lib.optionalString (host.ipv6 != null) "${host.ipv6} ${name}"}
           '') name
