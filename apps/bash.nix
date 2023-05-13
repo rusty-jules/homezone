@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
   environment.interactiveShellInit = ''
-      alias ll="exa --tree --color=always -L 3"
-    '';
+    alias ll="exa --tree --color=always -L 3"
+  '';
 }
