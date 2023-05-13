@@ -73,7 +73,6 @@ in
       platy = {
         ipv4 = "192.168.1.70";
         etherIp = "192.168.1.170";
-        ipv6 = "::192.168.1.70";
         wifiInterfaceName = "wlp1s0";
         etherInterfaceName = "enp0s20u4";
         iscsiInitiatorName = "iqn.2016-04.com.open-iscsi:3df2c416388d";
