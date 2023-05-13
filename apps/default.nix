@@ -28,6 +28,9 @@
     bottom
     du-dust
     exa
+    inetutils
+    ethtool
+    lshw
     # apps required for additional k3s services
     # for longhorn
     nfs-utils
