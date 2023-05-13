@@ -3,7 +3,7 @@
 {
   imports = [
     ./jables-hardware.nix
-    ../k3s/server.nix
+    ../k3s/ha-server.nix
     ../net/ssh.nix
   ];
 
