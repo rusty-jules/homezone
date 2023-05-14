@@ -46,6 +46,10 @@ in
       ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 
+    for LIB in ${pkgs.nvidia-container-toolkit}/lib/*; do
+      ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
+    done
+
     echo "initializing nvidia ld cache"
     ldconfig -C /tmp/ld.so.cache /tmp/nvidia-libs
 
