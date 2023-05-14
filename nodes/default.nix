@@ -1,6 +1,11 @@
 { lib, config, ... }:
 let
   hostOptions = with lib; {
+    rootGateway = mkOption {
+      type = types.str;
+      default = "0.0.0.0";
+    };
+
     ipv4 = mkOption {
       type = types.str;
       description = ''

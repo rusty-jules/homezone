@@ -1,5 +1,18 @@
 { config, pkgs, lib, ... }:
 
+let
+  usbInterfaces = builtins.listToAttrs (map (interface: {
+    name = interface;
+    value = {
+      ipv4.addresses = lib.mkIf (config.networking.homezone.currentHost.etherIp != null) [{
+        address = config.networking.homezone.currentHost.etherIp;
+        prefixLength = 24;
+      }];
+    };
+  }) [ "enp7s0u1u4" "enp7s0u1" ]);
+
+  allGateways = with config.networking.homezone.currentHost; [ etherIp ipv4 rootGateway];
+in
 {
   imports = [
     ./jables-hardware.nix
@@ -38,13 +51,6 @@
     };
 
     interfaces = {
-      "enp7s0u1u4" = {
-        ipv4.addresses = lib.mkIf (config.networking.homezone.currentHost.etherIp != null) [{
-          address = config.networking.homezone.currentHost.etherIp;
-          prefixLength = 24;
-        }];
-      };
-
       ${config.networking.homezone.currentHost.etherInterfaceName}.ipv4.routes = [
         {
           options.scope = "global";
@@ -56,15 +62,14 @@
 
       ${config.networking.homezone.currentHost.wifiInterfaceName}.ipv4.routes = map
         (via: {
+          inherit via;
           options.scope = "global";
           # lower the priority of the wifi interface for the 192.168.1.0/24 subnet
           options.metric = "100";
           address = "192.168.1.0";
           prefixLength = 24;
-          via = via;
-        }) with config.networking.homezone.currentHost;
-      [ etherIp ipv4 ] ++ [ "0.0.0.0" ];
-    };
+        }) allGateways;
+    } // usbInterfaces;
   };
 
   system.copySystemConfiguration = false;

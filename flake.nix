@@ -23,21 +23,16 @@
       nixosConfigurations =
         import ./outputs/nixos-conf.nix { inherit inputs system sops-nix overlays; };
 
-      deploy.nodes = mapAttrs
-        (node: _: {
+      deploy.nodes = builtins.listToAttrs (map (hostname: {
+        name = hostname;
+        value = {
+          inherit hostname;
           sshUser = "root";
-          hostname = node;
           remoteBuild = true;
           fastConnection = true; # copy the entire closure to the node
-          profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${node};
-        })
-        {
-          jables = { };
-          kables = { };
-          platy = { };
-          ljesus = { };
-          belakay = { };
+          profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${hostname};
         };
+      }) [ "jables" "kables" "platy" "ljesus" "belakay" ]);
 
       checks =
         let
