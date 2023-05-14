@@ -29,6 +29,7 @@ in
 
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = with pkgs; [
+    glibc # for ldconfig in preStart
     nvidia-container-toolkit
     nvidia-container-runtime
     unpatched-nvidia-driver
