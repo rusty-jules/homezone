@@ -6,6 +6,20 @@ let
   }));
 in
 {
+  environment.systemPackages = with pkgs; [
+    # we need the config.toml written to /etc//nvidia-container-runtime
+    # https://github.com/NixOS/nixpkgs/blob/176aaf016abe98be350f8fb8cebbdd63d4b05be5/pkgs/applications/virtualization/nvidia-container-toolkit/default.nix#L67
+    nvidia-k3s
+    nvidia-docker
+  ];
+
+  environment.etc = {
+    "nvidia-container-runtime/config.toml" = {
+      source = ../overlays/config.toml;
+      mode = "0600";
+    };
+  };
+
   # This installs the nvidia driver
   # It seems that this service installs a mix of packages, both necessary and unnecessary.
   # The root nvidia-linux driver is here:
@@ -25,6 +39,7 @@ in
   systemd.services.k3s.path = with pkgs; [
     glibc # for ldconfig in preStart
     nvidia-k3s
+    nvidia-docker
     unpatched-nvidia-driver
   ];
 
@@ -35,7 +50,7 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*}; do
+    for LIB in ${unpatched-nvidia-driver}/lib/*; do
       ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 
