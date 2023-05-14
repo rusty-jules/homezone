@@ -53,7 +53,7 @@ in
     glibc # for ldconfig in preStart
     nvidia-container-toolkit
     nvidia-container-runtime
-    unpatched-nvidia-driver
+    config.hardware.nvidia.package
     cudaPackages.fabricmanager
     cudaPackages.cuda_nvml_dev
     runc
@@ -66,7 +66,7 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
+    for LIB in {${config.hardware.nvidia.package}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
       ln -s -f $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 

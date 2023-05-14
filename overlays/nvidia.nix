@@ -74,7 +74,7 @@ in
     '';
   };
 
-  nvidia-container-toolkit = super.stdenv.mkDerivation {
+  nvidia-container-toolkit = super.stdenv.mkDerivation rec {
     pname = "nvidia-container-toolkit";
     version = "1.13.1";
 
@@ -109,6 +109,7 @@ in
     ];
 
     nativeBuildInputs = with super.pkgs; [
+      autoPatchelfHook
       bmake
       gnum4
       git
@@ -118,6 +119,8 @@ in
       rpcsvc-proto
       stdenv
       which
+      removeReferencesTo
+      makeWrapper
     ];
 
     runtimeDependencies = with self.pkgs; [
@@ -130,11 +133,16 @@ in
       cudaPackages.fabricmanager
     ];
 
+    enableParallelBuilding = true;
+
     prePatch = ''
       substituteInPlace src/common.h --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
+
+      sed -i Makefile \
+        -e '/$(INSTALL) -m 755 $(libdir)\/$(LIBGO_SHARED) $(DESTDIR)$(libdir)/d'
     '';
 
-    patches = [ ./remove-curls.patch ./remove-ld-conf.patch ];
+    patches = [ ./remove-curls.patch ./libnvc-ldconfig-and-path-fixes.patch ];
 
     buildPhase = ''
       export GOCACHE=$NIX_BUILD_TOP/.cache
@@ -142,10 +150,25 @@ in
       make prefix=$out/usr/local
     '';
 
+    dontStrip = true;
+
     installPhase = ''
       # ensure we do not use bmake, which was required for elftoolchain,
       # but is not compatible with the root Makefile
       make install prefix=$out exec_prefix=$out
+      runHook postInstall
     '';
+
+    postInstall =
+      let
+        inherit (super.pkgs.addOpenGLRunpath) driverLink;
+        libraryPath = self.lib.makeLibraryPath [ "$out" driverLink "${driverLink}-32" ];
+      in
+    ''
+      remove-references-to -t "${super.pkgs.go}" $out/lib/libnvidia-container-go.so.${version}
+      wrapProgram $out/bin/nvidia-container-cli --prefix LD_LIBRARY_PATH : ${libraryPath}
+    '';
+
+    #disallowedReferences = [ super.pkgs.go ];
   };
 }
