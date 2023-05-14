@@ -42,11 +42,7 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in ${unpatched-nvidia-driver}/lib/*; do
-      ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
-    done
-
-    for LIB in ${pkgs.nvidia-container-toolkit}/lib/*; do
+    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*}; do
       ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 

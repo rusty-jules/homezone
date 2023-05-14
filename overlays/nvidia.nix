@@ -34,7 +34,6 @@ in
     };
 
     nativeBuildInputs = with super.pkgs; [
-      autoPatchelfHook
       stdenv
       go
     ];
@@ -110,7 +109,6 @@ in
     ];
 
     nativeBuildInputs = with super.pkgs; [
-      autoPatchelfHook
       bmake
       gnum4
       git
