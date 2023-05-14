@@ -20,9 +20,10 @@
 
   # increase maximum number of open files
   # https://github.com/NixOS/nixpkgs/issues/159964
-  systemd.services."user@1000".serviceConfig.LimitNOFILE = "32768";
+  # etcd recommends 64,000
+  systemd.services."user@1000".serviceConfig.LimitNOFILE = "65536";
   security.pam.loginLimits = [
-    { domain = "*"; type = "-"; item = "nofile"; value = "32768"; }
+    { domain = "*"; type = "-"; item = "nofile"; value = "65536"; }
   ];
 
   system.copySystemConfiguration = lib.mkDefault false;

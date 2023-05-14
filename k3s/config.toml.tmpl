@@ -23,7 +23,8 @@
 
 [plugins.cri.containerd.runtimes.runc]
   # ---- changed from 'io.containerd.runc.v2' for GPU support
-  runtime_type = "io.containerd.runtime.v1.linux"
+  # ---- JA: changed back because https://github.com/k3s-io/k3s/blob/9bcfac8b8811919591719a497aa7204a96dc1df1/pkg/agent/containerd/nvidia.go#L33
+  runtime_type = "io.containerd.runc.v2"
 
 # ---- added for GPU support
 [plugins.linux]

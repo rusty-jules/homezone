@@ -13,9 +13,68 @@ let
   };
 in
 {
-  # FIXME: Need to wrap this program or patch such that
-  # `ldconfig -C /tmp/ld.so.cache` is created every time
-  # this is run
+  super.packageOverrides = super: {
+    cudaPackages.fabricmanager = super.cudaPackages.fabricmanager.override {
+      attrs.version = "525.85.12";
+      attrs."linux-x86_64" = {
+        relative_path = "fabricmanager/linux-x86_64/fabricmanager-linux-x86_64-525.85.12-archive.tar.xz";
+        sha256 = "0x0czlzhh0an6dh33p84hys4w8nm69irwl30k1492z1lfflf3rh1";
+      };
+    };
+  };
+
+  nvidia-container-runtime = super.stdenv.mkDerivation rec {
+    pname = "nvidia-container-runtime";
+    version = "1.13.1";
+
+    src = super.fetchgit {
+      url = "https://gitlab.com/nvidia/container-toolkit/container-toolkit";
+      rev = "refs/tags/v1.13.1";
+      sha256 = "sha256-4Fya06FMrcX3v0JV+Ab8L/w3SgKLRxtThTEtWUGxR0w=";
+    };
+
+    nativeBuildInputs = with super.pkgs; [
+      autoPatchelfHook
+      stdenv
+      go
+    ];
+
+    runtimeDependencies = with self.pkgs; [
+      # dynamic lib load of libnvidia-ml.so.1 and libcuda.so.1
+      linuxKernel.packages.linux_5_15.nvidia_x11_production
+      nvidia-container-toolkit
+    ];
+
+    prePatch = ''
+      substituteInPlace internal/ldcache/ldcache.go \
+        --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
+      substituteInPlace cmd/nvidia-ctk/hook/update-ldcache/update-ldcache.go \
+        --replace "/etc/ld.so" "/tmp/ld.so"
+      substituteInPlace tools/container/toolkit/toolkit.go \
+        --replace "/usr/bin/" "$out/bin/"
+    '';
+
+    buildPhase = ''
+      export GOCACHE=$NIX_BUILD_TOP/.cache
+      export GOPATH=$NIX_BUILD_TOP/go
+      make binaries
+    '';
+
+    oci-nvidia-hook = ''
+      #!/bin/sh
+      PATH="${self.lib.concatStringsSep "/bin:" runtimeDependencies}/bin:$out/bin:/run/current-system/sw/bin" \
+        $out/bin/nvidia-container-runtime-hook "$@"
+    '';
+
+    installPhase = ''
+      mkdir -p $out/bin
+      mv nvidia-container-runtime* $out/bin
+      echo '${oci-nvidia-hook}' > $out/bin/oci-nvidia-hook
+      chmod +x $out/bin/oci-nvidia-hook
+      substituteInPlace $out/bin/oci-nvidia-hook --replace "\$out" $out
+    '';
+  };
+
   nvidia-container-toolkit = super.stdenv.mkDerivation {
     pname = "nvidia-container-toolkit";
     version = "1.13.1";
@@ -63,12 +122,14 @@ in
       which
     ];
 
-    runtimeDependencies = with super.pkgs; [
+    runtimeDependencies = with self.pkgs; [
       # I have no idea which "linux_{flavor}" applies since the installed version
       # was "selected" by services.xerver.videoDrivers, but I assume it needs to
       # match the version of linux installed...selecting that will make this able
       # to actually be added to upstream
       linuxKernel.packages.linux_5_15.nvidia_x11_production
+      # https://github.com/NVIDIA/libnvidia-container/blob/eb0415c458c5e5d97cb8ac08b42803d075ed73cd/src/nvc_info.c#L65
+      cudaPackages.fabricmanager
     ];
 
     prePatch = ''
