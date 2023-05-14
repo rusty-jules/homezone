@@ -1,17 +1,5 @@
 self: super:
-let
-  nvidia-modprobe-version = "495.44";
-  nvidia-modprobe-src = super.fetchurl {
-    url = "https://github.com/NVIDIA/nvidia-modprobe/archive/${nvidia-modprobe-version}.tar.gz";
-    sha256 = "sha256-rm6cfmtDNolFwo9ri20NfMNu5+G+iVWgCaHLGJ5G3pI=";
-  };
 
-  elftoolchain-version = "elftoolchain-0.7.1";
-  elftoolchain-src = super.fetchurl {
-    url = "https://sourceforge.net/projects/elftoolchain/files/Sources/${elftoolchain-version}/${elftoolchain-version}.tar.bz2";
-    sha256 = "1dfj5fxvlsqa88rcyxpl88pyqjzvydi7bp8mf8w984pjzj8lbwa4";
-  };
-in
 {
   super.packageOverrides = super: {
     cudaPackages.fabricmanager = super.cudaPackages.fabricmanager.override {
@@ -23,132 +11,34 @@ in
     };
   };
 
-  nvidia-container-runtime = super.stdenv.mkDerivation rec {
-    pname = "nvidia-container-runtime";
-    version = "1.13.1";
-
-    src = super.fetchgit {
-      url = "https://gitlab.com/nvidia/container-toolkit/container-toolkit";
-      rev = "refs/tags/v1.13.1";
-      sha256 = "sha256-4Fya06FMrcX3v0JV+Ab8L/w3SgKLRxtThTEtWUGxR0w=";
-    };
-
-    nativeBuildInputs = with super.pkgs; [
-      stdenv
-      go
-    ];
-
-    runtimeDependencies = with self.pkgs; [
-      # dynamic lib load of libnvidia-ml.so.1 and libcuda.so.1
-      linuxKernel.packages.linux_5_15.nvidia_x11_production
-      nvidia-container-toolkit
-    ];
-
-    prePatch = ''
-      substituteInPlace internal/ldcache/ldcache.go \
-        --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
-      substituteInPlace cmd/nvidia-ctk/hook/update-ldcache/update-ldcache.go \
-        --replace "/etc/ld.so" "/tmp/ld.so"
-      substituteInPlace tools/container/toolkit/toolkit.go \
-        --replace "/usr/bin/" "$out/bin/"
-    '';
-
-    buildPhase = ''
-      export GOCACHE=$NIX_BUILD_TOP/.cache
-      export GOPATH=$NIX_BUILD_TOP/go
-      make binaries
-    '';
-
-    oci-nvidia-hook = ''
-      #!/bin/sh
-      PATH="${self.lib.concatStringsSep "/bin:" runtimeDependencies}/bin:$out/bin:/run/current-system/sw/bin" \
-        $out/bin/nvidia-container-runtime-hook "$@"
-    '';
-
-    installPhase = ''
-      mkdir -p $out/bin
-      mv nvidia-container-runtime* $out/bin
-      echo '${oci-nvidia-hook}' > $out/bin/oci-nvidia-hook
-      chmod +x $out/bin/oci-nvidia-hook
-      substituteInPlace $out/bin/oci-nvidia-hook --replace "\$out" $out
-    '';
+  # https://discourse.nixos.org/t/using-nvidia-container-runtime-with-containerd-on-nixos/27865/3
+  nvidia-k3s = with self.pkgs; mkNvidiaContainerPkg {
+    name = "nvidia-k3s";
+    containerRuntimePath = "runc";
+    configTemplate = ./config.toml;
   };
 
-  nvidia-container-toolkit = super.stdenv.mkDerivation {
-    pname = "nvidia-container-toolkit";
-    version = "1.13.1";
+  libnvidia-container = super.libnvidia-container.overrideAttrs (oldAttrs: {
+    version = flakes.libnvidia-container.version;
+    src = flakes.libnvidia-container.path;
 
-    src = super.fetchgit {
-      url = "https://github.com/NVIDIA/libnvidia-container";
-      rev = "refs/tags/v1.13.1";
-      sha256 = "sha256-QBV0l/pvBSex5IHS9duVPyLW9l27IhyGQysd1b5SpWQ=";
-      leaveDotGit = true;
-    };
-
-    preConfigure = ''
-      # add libtirpc to gcc
-      export CFLAGS="-I${super.lib.getDev super.pkgs.libtirpc}/include/tirpc $CFLAGS"
-      export LDFLAGS="-L${super.lib.getLib super.pkgs.libtirpc}/lib -ltirpc $LDFLAGS"
-    '';
-
-    postUnpack = ''
-      mkdir -p $sourceRoot/deps/src/nvidia-modprobe-${nvidia-modprobe-version}
-      cat ${nvidia-modprobe-src} | tar -C $sourceRoot/deps/src/nvidia-modprobe-${nvidia-modprobe-version} \
-        --strip-components=1 -xz nvidia-modprobe-${nvidia-modprobe-version}/modprobe-utils
-      mkdir -p $sourceRoot/deps/src/${elftoolchain-version}
-      cat ${elftoolchain-src} | tar -C $sourceRoot/deps/src/${elftoolchain-version}/ \
-        --strip-components=1 -xj ${toString (map(dir: "${elftoolchain-version}/${dir}") ["mk" "common" "libelf"])}
-    '';
-
-    buildInputs = with super.pkgs; [
-      libcap
-      libseccomp
-      # there is a mk/libtirpc.mk that downloads and builds the source,
-      # but it was not run by default `make` for some reason, likely the WITH_TIRPC flag
-      libtirpc
+    patches = [
+      ./libnvidia-container.patch
+      ./libnvidia-container-ldcache.patch
+      (flakes.nixpkgs.path + "/pkgs/applications/virtualization/libnvidia-container/inline-c-struct.patch")
     ];
 
-    nativeBuildInputs = with super.pkgs; [
-      bmake
-      gnum4
-      git
-      go
-      lsb-release
-      pkg-config
-      rpcsvc-proto
-      stdenv
-      which
-    ];
-
-    runtimeDependencies = with self.pkgs; [
-      # I have no idea which "linux_{flavor}" applies since the installed version
-      # was "selected" by services.xerver.videoDrivers, but I assume it needs to
-      # match the version of linux installed...selecting that will make this able
-      # to actually be added to upstream
-      linuxKernel.packages.linux_5_15.nvidia_x11_production
-      # https://github.com/NVIDIA/libnvidia-container/blob/eb0415c458c5e5d97cb8ac08b42803d075ed73cd/src/nvc_info.c#L65
-      cudaPackages.fabricmanager
-    ];
-
-    prePatch = ''
-      substituteInPlace src/common.h --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
+    postPatch = (oldAttrs.postPatch or "") + ''
+      sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" src/common.h
     '';
+  });
 
-    patches = [ ./remove-curls.patch ./remove-ld-conf.patch ];
+  nvidia-container-toolkit = super.nvidia-container-toolkit.overrideAttrs (oldAttrs: {
+    version = flakes.nvidia-container-toolkit.version;
+    src = flakes.nvidia-container-toolkit.path;
 
-    buildPhase = ''
-      export GOCACHE=$NIX_BUILD_TOP/.cache
-      export GOPATH=$NIX_BUILD_TOP/go
-      make prefix=$out/usr/local
+    postPatch = (oldAttrs.postPatch or "") + ''
+      sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" internal/ldcache/ldcache.go
     '';
-
-    # for autoPatchelfHook
-    dontStrip = true;
-
-    installPhase = ''
-      # ensure we do not use bmake, which was required for elftoolchain,
-      # but is not compatible with the root Makefile
-      make install prefix=$out exec_prefix=$out
-    '';
-  };
+  });
 }

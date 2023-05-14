@@ -6,12 +6,6 @@ let
   }));
 in
 {
-  environment.systemPackages = with pkgs; [
-    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
-    # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
-    nvidia-container-toolkit
-    nvidia-container-runtime
-  ];
   # This installs the nvidia driver
   # It seems that this service installs a mix of packages, both necessary and unnecessary.
   # The root nvidia-linux driver is here:
@@ -30,8 +24,7 @@ in
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = with pkgs; [
     glibc # for ldconfig in preStart
-    nvidia-container-toolkit
-    nvidia-container-runtime
+    nvidia-k3s
     unpatched-nvidia-driver
   ];
 
