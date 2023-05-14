@@ -1,4 +1,10 @@
 { config, pkgs, ... }:
+
+let
+  unpatched-nvidia-driver = (config.hardware.nvidia.package.overrideAttrs (oldAttrs: {
+    builder = ../overlays/nvidia-builder.sh;
+  }));
+in
 {
   environment.systemPackages = with pkgs; [
     # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
@@ -25,17 +31,18 @@
   systemd.services.k3s.path = with pkgs; [
     nvidia-container-toolkit
     nvidia-container-runtime
-    config.hardware.nvidia.package
+    unpatched-nvidia-driver
   ];
 
   # FIXME: this resulted in a systemd unit stop crash loop
   ## here we can initialize the ld cache that nvidia requires
+  # https://discourse.nixos.org/t/using-nvidia-container-runtime-with-containerd-on-nixos/27865/6
   systemd.services.k3s.preStart = ''
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for l in ${config.hardware.nvidia.package}/lib/*; do
-      ln -s $(readlink -f $l) /tmp/nvidia-libs/$(basename $l)
+    for LIB in ${unpatched-nvidia-driver}/lib/*; do
+      ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 
     echo "initializing nvidia ld cache"
