@@ -18,6 +18,9 @@
   # This selects the Nvidia Driver version, GTX 1070 is not yet legacy!
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
 
+  # needed for ldconfig files
+  systemd.services.k3s.serviceConfig.PrivateTmp = true;
+
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = with pkgs; [
     nvidia-container-toolkit
@@ -27,18 +30,18 @@
 
   # FIXME: this resulted in a systemd unit stop crash loop
   ## here we can initialize the ld cache that nvidia requires
-  #systemd.services.k3s.preStart = ''
-    #rm -rf /tmp/nvidia-libs
-    #mkdir -p /tmp/nvidia-libs
+  systemd.services.k3s.preStart = ''
+    rm -rf /tmp/nvidia-libs
+    mkdir -p /tmp/nvidia-libs
 
-    ## for l in ${config.hardware.nvidia.package}/lib/*; do
-    ##   ln -s $(readlink -f $l) /tmp/nvidia-libs/$(basename $l)
-    ## done
+    for l in ${config.hardware.nvidia.package}/lib/*; do
+      ln -s $(readlink -f $l) /tmp/nvidia-libs/$(basename $l)
+    done
 
-    #echo "initializing nvidia ld cache"
-    #ldconfig -C /tmp/ld.so.cache ${config.hardware.nvidia/package}/lib
+    echo "initializing nvidia ld cache"
+    ldconfig -C /tmp/ld.so.cache /tmp/nvidia-libs
 
-    #echo "nvidia ld cache contents"
-    #ldconfig -C /tmp/ld.so.cache --print-cache
-  #'';
+    echo "nvidia ld cache contents"
+    ldconfig -C /tmp/ld.so.cache --print-cache
+  '';
 }

@@ -133,13 +133,10 @@ in
     ];
 
     prePatch = ''
-      substituteInPlace src/nvc_internal.h --replace "libnvidia-container-go.so.1" \
-        "$out/lib/libnvidia-container-go.so.1"
-      substituteInPlace src/nvc_ldcache.c --replace "/etc/ld.so.conf" "/tmp/ld.so.conf"
-      substituteInPlace src/nvc_ldcache.c src/common.h --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
+      substituteInPlace src/common.h --replace "/etc/ld.so.cache" "/tmp/ld.so.cache"
     '';
 
-    patches = [ ./remove-curls.patch ];
+    patches = [ ./remove-curls.patch ./remove-ld-conf.patch ];
 
     buildPhase = ''
       export GOCACHE=$NIX_BUILD_TOP/.cache
