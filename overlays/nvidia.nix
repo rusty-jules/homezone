@@ -142,9 +142,6 @@ in
       make prefix=$out/usr/local
     '';
 
-    # for autoPatchelfHook
-    dontStrip = true;
-
     installPhase = ''
       # ensure we do not use bmake, which was required for elftoolchain,
       # but is not compatible with the root Makefile

@@ -1,9 +1,17 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   unpatched-nvidia-driver = (config.hardware.nvidia.package.overrideAttrs (oldAttrs: {
     builder = ../overlays/nvidia-builder.sh;
   }));
+
+  runtime-config = pkgs.runCommandNoCC "config.toml" {
+    src = ../overlays/config.toml;
+  } ''
+    cp $src $out
+    substituteInPlace $out \
+      --subst-var-by glibcbin ${lib.getBin pkgs.glibc}
+  '';
 in
 {
   environment.systemPackages = with pkgs; [
@@ -11,7 +19,18 @@ in
     # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
     nvidia-container-toolkit
     nvidia-container-runtime
+    cudaPackages.fabricmanager
+    cudaPackages.cuda_nvml_dev
+    runc
   ];
+
+  environment.etc = {
+    "nvidia-container-runtime/config.toml" = {
+      source = runtime-config;
+      mode = "0600";
+    };
+  };
+
   # This installs the nvidia driver
   # It seems that this service installs a mix of packages, both necessary and unnecessary.
   # The root nvidia-linux driver is here:
@@ -23,6 +42,8 @@ in
 
   # This selects the Nvidia Driver version, GTX 1070 is not yet legacy!
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+  # Required to keep GPU awake for runtime
+  hardware.nvidia.nvidiaPersistenced = true;
 
   # needed for ldconfig files
   systemd.services.k3s.serviceConfig.PrivateTmp = true;
@@ -33,6 +54,9 @@ in
     nvidia-container-toolkit
     nvidia-container-runtime
     unpatched-nvidia-driver
+    cudaPackages.fabricmanager
+    cudaPackages.cuda_nvml_dev
+    runc
   ];
 
   # FIXME: this resulted in a systemd unit stop crash loop
@@ -42,8 +66,8 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*}; do
-      ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
+    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
+      ln -s -f $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 
     echo "initializing nvidia ld cache"
