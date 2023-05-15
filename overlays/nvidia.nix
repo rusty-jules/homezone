@@ -11,6 +11,10 @@ let
     url = "https://sourceforge.net/projects/elftoolchain/files/Sources/${elftoolchain-version}/${elftoolchain-version}.tar.bz2";
     sha256 = "1dfj5fxvlsqa88rcyxpl88pyqjzvydi7bp8mf8w984pjzj8lbwa4";
   };
+
+  unpatched-nvidia-driver = (self.pkgs.linuxKernel.packages.linux_5_15.nvidia_x11_production.overrideAttrs (oldAttrs: {
+    builder = ../overlays/nvidia-builder.sh;
+  }));
 in
 {
   super.packageOverrides = super: {
@@ -40,7 +44,8 @@ in
 
     runtimeDependencies = with self.pkgs; [
       # dynamic lib load of libnvidia-ml.so.1 and libcuda.so.1
-      linuxKernel.packages.linux_5_15.nvidia_x11_production
+      #linuxKernel.packages.linux_5_15.nvidia_x11_production
+      unpatched-nvidia-driver
       nvidia-container-toolkit
     ];
 
@@ -128,7 +133,8 @@ in
       # was "selected" by services.xerver.videoDrivers, but I assume it needs to
       # match the version of linux installed...selecting that will make this able
       # to actually be added to upstream
-      linuxKernel.packages.linux_5_15.nvidia_x11_production
+      #linuxKernel.packages.linux_5_15.nvidia_x11_production
+      unpatched-nvidia-driver
       # https://github.com/NVIDIA/libnvidia-container/blob/eb0415c458c5e5d97cb8ac08b42803d075ed73cd/src/nvc_info.c#L65
       cudaPackages.fabricmanager
     ];
@@ -142,7 +148,7 @@ in
         -e '/$(INSTALL) -m 755 $(libdir)\/$(LIBGO_SHARED) $(DESTDIR)$(libdir)/d'
     '';
 
-    patches = [ ./remove-curls.patch ./libnvc-ldconfig-and-path-fixes.patch ];
+    patches = [ ./remove-curls.patch ./remove-ld-conf.patch ];
 
     buildPhase = ''
       export GOCACHE=$NIX_BUILD_TOP/.cache
@@ -162,7 +168,7 @@ in
     postInstall =
       let
         inherit (super.pkgs.addOpenGLRunpath) driverLink;
-        libraryPath = self.lib.makeLibraryPath [ "$out" driverLink "${driverLink}-32" ];
+        libraryPath = self.lib.makeLibraryPath [ unpatched-nvidia-driver "$out" driverLink "${driverLink}-32" ];
       in
     ''
       remove-references-to -t "${super.pkgs.go}" $out/lib/libnvidia-container-go.so.${version}

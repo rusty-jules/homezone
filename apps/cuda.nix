@@ -11,6 +11,10 @@ let
     cp $src $out
     substituteInPlace $out \
       --subst-var-by glibcbin ${lib.getBin pkgs.glibc}
+    substituteInPlace $out \
+      --subst-var-by nvidia-drivers ${lib.getBin unpatched-nvidia-driver}
+    # substituteInPlace $out \
+    #   --subst-var-by nvidia-container-cli ${pkgs.nvidia-container-toolkit}/bin/.nvidia-container-cli-wrapped
   '';
 in
 {
@@ -53,7 +57,7 @@ in
     glibc # for ldconfig in preStart
     nvidia-container-toolkit
     nvidia-container-runtime
-    config.hardware.nvidia.package
+    unpatched-nvidia-driver
     cudaPackages.fabricmanager
     cudaPackages.cuda_nvml_dev
     runc
@@ -66,7 +70,7 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in {${config.hardware.nvidia.package}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
+    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
       ln -s -f $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 

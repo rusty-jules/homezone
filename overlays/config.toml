@@ -1,5 +1,5 @@
 [nvidia-container-cli]
-#root = "/run/nvidia/driver"
+root = "@nvidia-drivers@"
 path = "@nvidia-container-cli@"
 environment = []
 debug = "/var/log/nvidia-container-toolkit.log"
