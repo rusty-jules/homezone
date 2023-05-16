@@ -38,6 +38,7 @@ in
     };
 
     nativeBuildInputs = with super.pkgs; [
+      makeWrapper
       stdenv
       go
     ];
@@ -58,6 +59,13 @@ in
         --replace "/usr/bin/" "$out/bin/"
     '';
 
+    # https://github.com/NixOS/nixpkgs/blob/90094f509838dc39425c12a0a2beee1a2d086a22/pkgs/applications/virtualization/nvidia-container-toolkit/default.nix#L44
+    preBuild = ''
+      # replace the default hookDefaultFilePath to the $out path
+      substituteInPlace go/src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-container-runtime/main.go \
+        --replace '/usr/bin/nvidia-container-runtime-hook' '${placeholder "out"}/bin/nvidia-container-runtime-hook'
+    '';
+
     buildPhase = ''
       export GOCACHE=$NIX_BUILD_TOP/.cache
       export GOPATH=$NIX_BUILD_TOP/go
@@ -66,8 +74,8 @@ in
 
     oci-nvidia-hook = ''
       #!/bin/sh
-      PATH="${self.lib.concatStringsSep "/bin:" runtimeDependencies}/bin:$out/bin:/run/current-system/sw/bin" \
-        $out/bin/nvidia-container-runtime-hook "$@"
+      PATH="${self.lib.getBin unpatched-nvidia-driver}/bin:${self.pkgs.nvidia-container-toolkit}/bin:$out/bin" \
+        $out/bin/nvidia-container-runtime-hook.real "$@"
     '';
 
     installPhase = ''
@@ -76,6 +84,14 @@ in
       echo '${oci-nvidia-hook}' > $out/bin/oci-nvidia-hook
       chmod +x $out/bin/oci-nvidia-hook
       substituteInPlace $out/bin/oci-nvidia-hook --replace "\$out" $out
+      runHook postInstall
+    '';
+
+    postInstall = ''
+      # swap oci-nvidia-hook (with the correct path to unpatched nvidia binaries) with nvidia-runtime-container-hook
+      # https://github.com/NVIDIA/nvidia-container-runtime/issues/47#issuecomment-463733117
+      mv $out/bin/nvidia-container-runtime-hook $out/bin/nvidia-container-runtime-hook.real
+      mv $out/bin/oci-nvidia-hook $out/bin/nvidia-container-runtime-hook
     '';
   };
 

@@ -5,14 +5,26 @@ let
     builder = ../overlays/nvidia-builder.sh;
   }));
 
+  nvidia-pkgs = with pkgs; [
+    (lib.getBin glibc) # for ldconfig in preStart
+    (lib.getBin unpatched-nvidia-driver)
+    nvidia-container-toolkit
+    nvidia-container-runtime
+    cudaPackages.fabricmanager
+    cudaPackages.cuda_nvml_dev
+    runc
+  ];
+
   runtime-config = pkgs.runCommandNoCC "config.toml" {
     src = ../overlays/config.toml;
   } ''
     cp $src $out
     substituteInPlace $out \
       --subst-var-by glibcbin ${lib.getBin pkgs.glibc}
+    # substituteInPlace $out \
+    #   --subst-var-by nvidia-drivers ${lib.getBin unpatched-nvidia-driver}
     substituteInPlace $out \
-      --subst-var-by nvidia-drivers ${lib.getBin unpatched-nvidia-driver}
+      --subst-var-by container-cli-path "PATH=${lib.concatStringsSep "/bin:" nvidia-pkgs}"
     # substituteInPlace $out \
     #   --subst-var-by nvidia-container-cli ${pkgs.nvidia-container-toolkit}/bin/.nvidia-container-cli-wrapped
   '';
@@ -53,15 +65,7 @@ in
   systemd.services.k3s.serviceConfig.PrivateTmp = true;
 
   # add nvidia pkgs to k3s PATH
-  systemd.services.k3s.path = with pkgs; [
-    glibc # for ldconfig in preStart
-    nvidia-container-toolkit
-    nvidia-container-runtime
-    unpatched-nvidia-driver
-    cudaPackages.fabricmanager
-    cudaPackages.cuda_nvml_dev
-    runc
-  ];
+  systemd.services.k3s.path = nvidia-pkgs;
 
   # FIXME: this resulted in a systemd unit stop crash loop
   ## here we can initialize the ld cache that nvidia requires

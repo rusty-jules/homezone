@@ -1,7 +1,7 @@
 [nvidia-container-cli]
-root = "@nvidia-drivers@"
+# root = "@nvidia-drivers@"
 path = "@nvidia-container-cli@"
-environment = []
+environment = ["@container-cli-path@"]
 debug = "/var/log/nvidia-container-toolkit.log"
 ldcache = "/tmp/ld.so.cache"
 load-kmods = true
@@ -10,6 +10,7 @@ load-kmods = true
 ldconfig = "@@glibcbin@/bin/ldconfig"
 
 [nvidia-container-runtime]
+environment = ["@container-cli-path@"]
 debug = "/var/log/nvidia-container-runtime.log"
 log-level = "debug"
 
