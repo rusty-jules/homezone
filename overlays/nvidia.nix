@@ -188,7 +188,14 @@ in
       in
     ''
       remove-references-to -t "${super.pkgs.go}" $out/lib/libnvidia-container-go.so.${version}
-      wrapProgram $out/bin/nvidia-container-cli --prefix LD_LIBRARY_PATH : ${libraryPath}
+      wrapProgram $out/bin/nvidia-container-cli --prefix LD_LIBRARY_PATH : ${libraryPath} \
+        --set PATH ${self.lib.makeBinPath [
+          (self.lib.getBin self.pkgs.glibc) # for ldconfig in preStart
+          (self.lib.getBin unpatched-nvidia-driver)
+          self.pkgs.cudaPackages.fabricmanager
+          self.pkgs.cudaPackages.cuda_nvml_dev
+          self.pkgs.runc
+        ]}
     '';
 
     #disallowedReferences = [ super.pkgs.go ];
