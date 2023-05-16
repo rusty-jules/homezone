@@ -74,7 +74,7 @@ in
 
     oci-nvidia-hook = ''
       #!/bin/sh
-      PATH="${self.lib.getBin unpatched-nvidia-driver}/bin:${self.pkgs.nvidia-container-toolkit}/bin:$out/bin" \
+      PATH="${self.lib.getBin unpatched-nvidia-driver}/bin:${self.pkgs.nvidia-container-toolkit}/bin:$out/bin:/run/current-system/sw/bin" \
         $out/bin/nvidia-container-runtime-hook.real "$@"
     '';
 
@@ -189,13 +189,13 @@ in
     ''
       remove-references-to -t "${super.pkgs.go}" $out/lib/libnvidia-container-go.so.${version}
       wrapProgram $out/bin/nvidia-container-cli --prefix LD_LIBRARY_PATH : ${libraryPath} \
-        --set PATH ${self.lib.makeBinPath [
+        --set PATH "${self.lib.makeBinPath [
           (self.lib.getBin self.pkgs.glibc) # for ldconfig in preStart
           (self.lib.getBin unpatched-nvidia-driver)
           self.pkgs.cudaPackages.fabricmanager
           self.pkgs.cudaPackages.cuda_nvml_dev
           self.pkgs.runc
-        ]}
+        ]}:/run/current-system/sw/bin"
     '';
 
     #disallowedReferences = [ super.pkgs.go ];
