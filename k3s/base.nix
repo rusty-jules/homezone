@@ -1,5 +1,12 @@
 { config, pkgs, lib, ... }:
 
+let
+  # https://github.com/k3s-io/k3s/issues/6518
+  containerdTemplate = pkgs.writeText "config.toml.tmpl"
+    (builtins.replaceStrings ["@nvidia-container-runtime@"] ["${pkgs.nvidia-container-runtime}/bin/nvidia-container-runtime"]
+      (lib.readFile ./config.toml.tmpl)
+    );
+in
 {
   networking = {
     firewall = {
@@ -36,4 +43,10 @@
       mode = "0600";
     };
   };
+
+  # The tmpl needs the full path to the container-shim
+  # https://github.com/k3s-io/k3s/issues/6518
+  system.activationScripts.writeContainerdConfigTemplate = lib.mkIf (config.networking.hostName == "belakay") (lib.stringAfter [ "var" ] ''
+    cp ${containerdTemplate} /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
+  '');
 }

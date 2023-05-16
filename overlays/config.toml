@@ -5,7 +5,7 @@ environment = ["@container-cli-path@"]
 debug = "/var/log/nvidia-container-toolkit.log"
 ldcache = "/tmp/ld.so.cache"
 load-kmods = true
-no-cgroups = true
+# no-cgroups = true
 #user = "root:video"
 ldconfig = "@@glibcbin@/bin/ldconfig"
 
@@ -17,7 +17,7 @@ log-level = "debug"
 # Specify the runtimes to consider. This list is processed in order and the PATH
 # searched for matching executables unless the entry is an absolute path.
 runtimes = [
-		# "/nix/store/zy777gkbaidsvic7cqchpvfarrlb248q-runc-1.1.7/bin/runc",
+		"/nix/store/zy777gkbaidsvic7cqchpvfarrlb248q-runc-1.1.7/bin/runc",
     "runc",
 ]
 
