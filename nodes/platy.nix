@@ -3,7 +3,7 @@
 {
   imports = [
     ./platy-hardware.nix
-    ../k3s/agent.nix
+    ../k3s/ha-server.nix
   ];
 
   # Use the GRUB 2 boot loader.
