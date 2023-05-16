@@ -1,21 +1,48 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   unpatched-nvidia-driver = (config.hardware.nvidia.package.overrideAttrs (oldAttrs: {
     builder = ../overlays/nvidia-builder.sh;
   }));
+
+  nvidia-pkgs = with pkgs; [
+    (lib.getBin glibc) # for ldconfig in preStart
+    (lib.getBin unpatched-nvidia-driver)
+    nvidia-container-toolkit
+    nvidia-container-runtime
+    cudaPackages.fabricmanager
+    cudaPackages.cuda_nvml_dev
+    runc
+  ];
+
+  runtime-config = pkgs.runCommandNoCC "config.toml" {
+    src = ../overlays/config.toml;
+  } ''
+    cp $src $out
+    substituteInPlace $out \
+      --subst-var-by glibcbin ${lib.getBin pkgs.glibc}
+    # substituteInPlace $out \
+    #   --subst-var-by nvidia-drivers ${lib.getBin unpatched-nvidia-driver}
+    substituteInPlace $out \
+      --subst-var-by container-cli-path "PATH=${lib.concatStringsSep "/bin:" nvidia-pkgs}"
+    # substituteInPlace $out \
+    #   --subst-var-by nvidia-container-cli ${pkgs.nvidia-container-toolkit}/bin/.nvidia-container-cli-wrapped
+  '';
 in
 {
   environment.systemPackages = with pkgs; [
-    # we need the config.toml written to /etc//nvidia-container-runtime
-    # https://github.com/NixOS/nixpkgs/blob/176aaf016abe98be350f8fb8cebbdd63d4b05be5/pkgs/applications/virtualization/nvidia-container-toolkit/default.nix#L67
-    nvidia-k3s
-    nvidia-docker
+    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
+    # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
+    nvidia-container-toolkit
+    nvidia-container-runtime
+    cudaPackages.fabricmanager
+    cudaPackages.cuda_nvml_dev
+    runc
   ];
 
   environment.etc = {
     "nvidia-container-runtime/config.toml" = {
-      source = ../overlays/config.toml;
+      source = runtime-config;
       mode = "0600";
     };
   };
@@ -31,17 +58,14 @@ in
 
   # This selects the Nvidia Driver version, GTX 1070 is not yet legacy!
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+  # Required to keep GPU awake for runtime
+  hardware.nvidia.nvidiaPersistenced = true;
 
   # needed for ldconfig files
   systemd.services.k3s.serviceConfig.PrivateTmp = true;
 
   # add nvidia pkgs to k3s PATH
-  systemd.services.k3s.path = with pkgs; [
-    glibc # for ldconfig in preStart
-    nvidia-k3s
-    nvidia-docker
-    unpatched-nvidia-driver
-  ];
+  systemd.services.k3s.path = nvidia-pkgs;
 
   # FIXME: this resulted in a systemd unit stop crash loop
   ## here we can initialize the ld cache that nvidia requires
@@ -50,8 +74,8 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in ${unpatched-nvidia-driver}/lib/*; do
-      ln -s $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
+    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
+      ln -s -f $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 
     echo "initializing nvidia ld cache"

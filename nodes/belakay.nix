@@ -2,6 +2,7 @@
 
 let
   keys = import ../net/keys.nix;
+  currentHost = config.networking.homezone.currentHost;
 in
 {
   imports = [
@@ -28,9 +29,21 @@ in
     root.openssh.authorizedKeys.keys = [ keys.homezone ];
   };
 
-  networking.defaultGateway = {
-    address = "192.168.1.1";
-    interface = config.networking.homezone.currentHost.etherInterfaceName;
+  networking = {
+    defaultGateway = {
+      address = "192.168.1.1";
+      interface = currentHost.etherInterfaceName;
+    };
+    interfaces = {
+      ${currentHost.wifiInterfaceName}.ipv4.routes = [{
+        options = {
+          scope = "global";
+          metric = "100";
+        };
+        address = "192.168.1.0";
+        prefixLength = 24;
+      }];
+    };
   };
 
   system.copySystemConfiguration = false;
