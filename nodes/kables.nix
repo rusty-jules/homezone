@@ -38,6 +38,10 @@
     interface = config.networking.homezone.currentHost.etherInterfaceName;
   };
 
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
+  '';
+
   networking.interfaces.${config.networking.homezone.currentHost.etherInterfaceName}.ipv4.routes = [
     {
       options.scope = "global";
