@@ -72,26 +72,33 @@ in
       make binaries
     '';
 
-    oci-nvidia-hook = ''
-      #!/bin/sh
-      PATH="${self.lib.getBin unpatched-nvidia-driver}/bin:${self.pkgs.nvidia-container-toolkit}/bin:$out/bin:/run/current-system/sw/bin" \
-        $out/bin/nvidia-container-runtime-hook.real "$@"
-    '';
-
     installPhase = ''
       mkdir -p $out/bin
       mv nvidia-container-runtime* $out/bin
-      echo '${oci-nvidia-hook}' > $out/bin/oci-nvidia-hook
-      chmod +x $out/bin/oci-nvidia-hook
-      substituteInPlace $out/bin/oci-nvidia-hook --replace "\$out" $out
+      mv nvidia-ctk $out/bin
       runHook postInstall
     '';
 
-    postInstall = ''
-      # swap oci-nvidia-hook (with the correct path to unpatched nvidia binaries) with nvidia-runtime-container-hook
-      # https://github.com/NVIDIA/nvidia-container-runtime/issues/47#issuecomment-463733117
-      mv $out/bin/nvidia-container-runtime-hook $out/bin/nvidia-container-runtime-hook.real
-      mv $out/bin/oci-nvidia-hook $out/bin/nvidia-container-runtime-hook
+    postInstall = 
+      let
+        inherit (super.pkgs.addOpenGLRunpath) driverLink;
+        libraryPath = self.lib.makeLibraryPath [ unpatched-nvidia-driver "$out" driverLink "${driverLink}-32" ];
+        binPath = self.lib.makeBinPath [
+          (self.lib.getBin self.pkgs.glibc) # for ldconfig in preStart
+          (self.lib.getBin unpatched-nvidia-driver)
+          "$out"
+          self.pkgs.cudaPackages.fabricmanager
+          self.pkgs.cudaPackages.cuda_nvml_dev
+          self.pkgs.nvidia-container-toolkit
+          self.pkgs.runc
+        ] + ":/run/current-system/sw/bin";
+      in
+    ''
+      for bin in {$out/bin/nvidia-container-runtime*,$out/bin/nvidia-ctk}; do
+        wrapProgram $bin \
+          --prefix LD_LIBRARY_PATH : ${libraryPath} \
+          --set PATH ${binPath}
+      done
     '';
   };
 

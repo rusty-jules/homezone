@@ -62,10 +62,19 @@ in
   hardware.nvidia.nvidiaPersistenced = true;
 
   # needed for ldconfig files
-  systemd.services.k3s.serviceConfig.PrivateTmp = true;
+  # nvidia-container-cli was using the root /tmp/ld.conf.so anyways...
+  # systemd.services.k3s.serviceConfig.PrivateTmp = true;
 
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = nvidia-pkgs;
+  # add the libraries to PATH for the nvidia-driver-plugin to discover (which does a dynamic load)
+  # https://github.com/NVIDIA/go-nvml/blob/6671dd5b56ed77ffd35b703c7694f63cfe01317f/pkg/dl/dl.go#L55
+  systemd.services.k3s.environment = {
+    LD_LIBRARY_PATH =
+      let inherit (pkgs.addOpenGLRunpath) driverLink;
+      in
+      lib.makeLibraryPath [ unpatched-nvidia-driver driverLink "${driverLink}-32" ];
+  };
 
   # FIXME: this resulted in a systemd unit stop crash loop
   ## here we can initialize the ld cache that nvidia requires
