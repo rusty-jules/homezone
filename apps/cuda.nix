@@ -21,7 +21,7 @@ let
     # substituteInPlace $out \
     #   --subst-var-by nvidia-drivers ${lib.getBin unpatched-nvidia-driver}
     substituteInPlace $out \
-      --subst-var-by container-cli-path "PATH=${lib.concatStringsSep "/bin:" nvidia-pkgs}"
+      --subst-var-by container-cli-path "PATH=${lib.makeBinPath nvidia-pkgs}"
   '';
 in
 {
@@ -35,8 +35,6 @@ in
     # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
     # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
     nvidia-k3s
-    libnvidia-container
-    nvidia-container-runtime
     cudaPackages.fabricmanager
     cudaPackages.cuda_nvml_dev
   ];

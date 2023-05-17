@@ -1,6 +1,8 @@
 self: super:
 let
-  unpatched-nvidia-driver = (self.pkgs.linuxKernel.packages.linux_5_15.nvidia_x11_production.overrideAttrs (oldAttrs: {
+  inherit (super.pkgs) callPackage;
+  virtualization = super.pkgs.path + "/pkgs/applications/virtualization";
+  unpatched-nvidia-driver = (super.pkgs.linuxKernel.packages.linux_5_15.nvidia_x11_production.overrideAttrs (oldAttrs: {
     builder = ../overlays/nvidia-builder.sh;
   }));
 in
@@ -15,13 +17,17 @@ in
   #   });
   # };
 
-  libnvidia-container = (self.pkgs.callPackage (super.pkgs.path + "/pkgs/applications/virtualization/libnvidia-container") {}).overrideAttrs (oldAttrs: {
+  libnvidia-container = (callPackage (virtualization + "/libnvidia-container") {}).overrideAttrs (oldAttrs: {
     version = "1.13.1";
+    src = oldAttrs.src // {
+      rev = "v1.13.1";
+      sha256 = "sha256-QBV0l/pvBSex5IHS9duVPyLW9l27IhyGQysd1b5SpWQ=";
+    };
 
     patches = [
       ./libnvc-ldcache-1.9.0.patch
       #./libnvidia-container-ldcache.patch
-      (super.pkgs.path + "/pkgs/applications/virtualization/libnvidia-container/inline-c-struct.patch")
+      (virtualization + "/libnvidia-container/inline-c-struct.patch")
     ];
 
     postPatch = (oldAttrs.postPatch or "") + ''
@@ -50,24 +56,27 @@ in
     '';
   });
 
-  nvidia-container-runtime = (super.pkgs.callPackage (super.pkgs.path + "/pkgs/applications/virtualization/nvidia-container-runtime") {
+  nvidia-container-runtime = (callPackage (virtualization + "/nvidia-container-runtime") {
     inherit (super) lib;
     inherit (super.pkgs) fetchFromGitHub buildGoPackage makeWrapper linkFarm writeShellScript glibc;
     containerRuntimePath = "runc";
     configTemplate = ./config.toml;
   }).overrideAttrs (oldAttrs: {
     version = "3.5.0";
-    # postPatch = (oldAttrs.postPatch or "") + ''
-    #   sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" internal/ldcache/ldcache.go
-    # '';
   });
 
-  nvidia-container-toolkit = (super.pkgs.callPackage (super.pkgs.path + "/pkgs/applications/virtualization/nvidia-container-toolkit") {
+  nvidia-container-toolkit = (callPackage (virtualization + "/nvidia-container-toolkit") {
     inherit (super) lib;
     inherit (super.pkgs) fetchFromGitHub buildGoModule makeWrapper;
     inherit (self) nvidia-container-runtime;
   }).overrideAttrs (oldAttrs: {
     version = "1.13.1";
+    src = oldAttrs.src // {
+      rev = "v1.13.1";
+      sha256 = "sha256-QBV0l/pvBSex5IHS9duVPyLW9l27IhyGQysd1b5SpWQ=";
+    };
+
+    vendorSha256 = "";
 
     # postPatch = (oldAttrs.postPatch or "") + ''
     #   sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" internal/ldcache/ldcache.go
@@ -82,10 +91,4 @@ in
       self.nvidia-container-runtime
     ];
   };
-
-  # nvidia-k3s = with self.pkgs; mkNvidiaContainerPkg {
-  #   name = "nvidia-k3s";
-  #   containerRuntimePath = "runc";
-  #   configTemplate = ./config.toml;
-  # };
 }
