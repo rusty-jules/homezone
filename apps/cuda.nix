@@ -8,11 +8,8 @@ let
   nvidia-pkgs = with pkgs; [
     (lib.getBin glibc) # for ldconfig in preStart
     (lib.getBin unpatched-nvidia-driver)
-    nvidia-container-toolkit
-    nvidia-container-runtime
+    nvidia-k3s
     cudaPackages.fabricmanager
-    cudaPackages.cuda_nvml_dev
-    runc
   ];
 
   runtime-config = pkgs.runCommandNoCC "config.toml" {
@@ -25,19 +22,23 @@ let
     #   --subst-var-by nvidia-drivers ${lib.getBin unpatched-nvidia-driver}
     substituteInPlace $out \
       --subst-var-by container-cli-path "PATH=${lib.concatStringsSep "/bin:" nvidia-pkgs}"
-    # substituteInPlace $out \
-    #   --subst-var-by nvidia-container-cli ${pkgs.nvidia-container-toolkit}/bin/.nvidia-container-cli-wrapped
   '';
 in
 {
+
+  virtualisation.docker = {
+    enable = true;
+    enableNvidia = true;
+  };
+
   environment.systemPackages = with pkgs; [
     # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
     # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
-    nvidia-container-toolkit
+    nvidia-k3s
+    libnvidia-container
     nvidia-container-runtime
     cudaPackages.fabricmanager
     cudaPackages.cuda_nvml_dev
-    runc
   ];
 
   environment.etc = {
@@ -54,7 +55,11 @@ in
   # We can test later if we can avoid installing X11 stuff along with the driver.
   services.xserver.videoDrivers = [ "nvidia" ];
   # This is required for some apps to see the driver
-  hardware.opengl.enable = true;
+  hardware.opengl = {
+    enable = true;
+    driSupport32Bit = true;
+    setLdLibraryPath = true;
+  };
 
   # This selects the Nvidia Driver version, GTX 1070 is not yet legacy!
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -63,18 +68,18 @@ in
 
   # needed for ldconfig files
   # nvidia-container-cli was using the root /tmp/ld.conf.so anyways...
-  # systemd.services.k3s.serviceConfig.PrivateTmp = true;
+  systemd.services.k3s.serviceConfig.PrivateTmp = true;
 
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = nvidia-pkgs;
   # add the libraries to PATH for the nvidia-driver-plugin to discover (which does a dynamic load)
   # https://github.com/NVIDIA/go-nvml/blob/6671dd5b56ed77ffd35b703c7694f63cfe01317f/pkg/dl/dl.go#L55
-  systemd.services.k3s.environment = {
-    LD_LIBRARY_PATH =
-      let inherit (pkgs.addOpenGLRunpath) driverLink;
-      in
-      lib.makeLibraryPath [ unpatched-nvidia-driver driverLink "${driverLink}-32" ];
-  };
+  # systemd.services.k3s.environment = {
+  #   LD_LIBRARY_PATH =
+  #     let inherit (pkgs.addOpenGLRunpath) driverLink;
+  #     in
+  #     lib.makeLibraryPath [ unpatched-nvidia-driver driverLink "${driverLink}-32" ];
+  # };
 
   # FIXME: this resulted in a systemd unit stop crash loop
   ## here we can initialize the ld cache that nvidia requires
@@ -83,7 +88,7 @@ in
     rm -rf /tmp/nvidia-libs
     mkdir -p /tmp/nvidia-libs
 
-    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.nvidia-container-toolkit}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
+    for LIB in {${unpatched-nvidia-driver}/lib/*,${pkgs.libtirpc}/lib/*,${pkgs.cudaPackages.cuda_nvml_dev}/lib/stubs/*}; do
       ln -s -f $(readlink -f $LIB) /tmp/nvidia-libs/$(basename $LIB)
     done
 

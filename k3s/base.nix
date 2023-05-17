@@ -3,7 +3,7 @@
 let
   # https://github.com/k3s-io/k3s/issues/6518
   containerdTemplate = pkgs.writeText "config.toml.tmpl"
-    (builtins.replaceStrings ["@nvidia-container-runtime@"] ["${pkgs.nvidia-container-runtime}/bin/nvidia-container-runtime"]
+    (builtins.replaceStrings ["@nvidia-container-runtime@"] ["${pkgs.nvidia-k3s}/bin/nvidia-container-runtime"]
       (lib.readFile ./config.toml.tmpl)
     );
 in
