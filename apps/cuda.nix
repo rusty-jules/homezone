@@ -66,7 +66,7 @@ in
 
   # needed for ldconfig files
   # nvidia-container-cli was using the root /tmp/ld.conf.so anyways...
-  systemd.services.k3s.serviceConfig.PrivateTmp = true;
+  # systemd.services.k3s.serviceConfig.PrivateTmp = true;
 
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = nvidia-pkgs;
