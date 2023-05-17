@@ -38,8 +38,11 @@ in
     let
       inherit (super.pkgs.addOpenGLRunpath) driverLink;
       libraryPath = self.lib.makeLibraryPath [ 
-        (self.lib.getBin self.pkgs.linuxKernel.packages.linux_5_15.nvidia_x11_production)
-        "$out" driverLink "${driverLink}-32"
+        # self.pkgs.linuxKernel.packages.linux_5_15.nvidia_x11_production
+        # unpatched-nvidia-driver
+        "$out"
+        driverLink
+        "${driverLink}-32"
       ];
       binPath = self.lib.makeBinPath [
         (self.lib.getBin self.pkgs.glibc) # for ldconfig in preStart
