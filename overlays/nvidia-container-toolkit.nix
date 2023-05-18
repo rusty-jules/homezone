@@ -41,6 +41,11 @@ buildGoPackage rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  prePatch = ''
+    # JA: Added
+    sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" internal/ldcache/ldcache.go
+  '';
+
   preBuild = ''
     # replace the default hookDefaultFilePath to the $out path
     substituteInPlace go/src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-container-runtime/main.go \

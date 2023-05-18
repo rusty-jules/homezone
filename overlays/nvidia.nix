@@ -35,7 +35,7 @@ in
       libnvidia-container;
 
     containerRuntimePath = "runc";
-    configTemplate = "./config.toml";
+    configTemplate = ./config.toml;
   };
 
   nvidia-k3s = self.pkgs.symlinkJoin {

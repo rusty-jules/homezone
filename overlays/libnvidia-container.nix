@@ -83,7 +83,7 @@ stdenv.mkDerivation rec {
       -e '/$(INSTALL) -m 755 $(libdir)\/$(LIBGO_SHARED) $(DESTDIR)$(libdir)/d'
 
     # JA: Added
-    sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" src/common.h
+    sed -i src/common.h -e "s@/etc/ld.so.cache@/tmp/ld.so.cache@"
   '';
 
   enableParallelBuilding = true;
@@ -119,7 +119,7 @@ stdenv.mkDerivation rec {
       ];
     in
     ''
-      remove-references-to -t "${go}" $out/lib/libnvidia-container-go.so.1.9.0
+      remove-references-to -t "${go}" $out/lib/libnvidia-container-go.so.${version}
       wrapProgram $out/bin/nvidia-container-cli --prefix LD_LIBRARY_PATH : ${libraryPath} \
         --set PATH ${binPath}
     '';
