@@ -48,8 +48,12 @@ buildGoPackage rec {
 
   preBuild = ''
     # replace the default hookDefaultFilePath to the $out path
-    substituteInPlace go/src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-container-runtime/main.go \
-      --replace '/usr/bin/nvidia-container-runtime-hook' '${placeholder "out"}/bin/nvidia-container-runtime-hook'
+    # substituteInPlace go/src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-container-runtime/main.go \
+    #   --replace '/usr/bin/nvidia-container-runtime-hook' '${placeholder "out"}/bin/nvidia-container-runtime-hook'
+
+    # JA: Changed (paths moved in new version)
+    substituteInPlace go/src/github.com/NVIDIA/nvidia-container-toolkit/internal/config/config.go \
+      --replace '/usr/bin' '${placeholder "out"}/bin'
   '';
 
   postInstall = ''
@@ -74,9 +78,11 @@ buildGoPackage rec {
     substituteInPlace $out/etc/nvidia-container-runtime/config.toml \
       --subst-var-by glibcbin ${lib.getBin glibc}
 
-    ln -s $out/bin/nvidia-container-{toolkit,runtime-hook}
+    # ln -s $out/bin/nvidia-container-{toolkit,runtime-hook}
 
-    wrapProgram $out/bin/nvidia-container-toolkit \
+    # wrapProgram $out/bin/nvidia-container-toolkit \
+    # JA: Changed, the above binary doesn't exist
+    wrapProgram $out/bin/nvidia-container-runtime-hook \
       --add-flags "-config ${placeholder "out"}/etc/nvidia-container-runtime/config.toml"
   '';
 
