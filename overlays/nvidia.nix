@@ -17,77 +17,32 @@ in
   #   });
   # };
 
-  libnvidia-container = (callPackage (virtualization + "/libnvidia-container") {}).overrideAttrs (oldAttrs: {
-    version = "1.13.1";
-    src = oldAttrs.src // {
-      rev = "v1.13.1";
-      sha256 = "sha256-QBV0l/pvBSex5IHS9duVPyLW9l27IhyGQysd1b5SpWQ=";
-    };
+  libnvidia-container = import ./libnvidia-container.nix {
+    inherit (self) stdenv lib;
+    inherit (self.pkgs)
+      addOpenGLRunpath fetchFromGitHub glibc pkg-config
+      libelf libcap libseccomp libtirpc rpcsvc-proto
+      makeWrapper substituteAll removeReferencesTo go;
+    inherit (self.pkgs.cudaPackages) fabricmanager;
+    inherit unpatched-nvidia-driver;
+  };
 
-    patches = [
-      ./libnvc-ldcache-1.9.0.patch
-      #./libnvidia-container-ldcache.patch
-      (virtualization + "/libnvidia-container/inline-c-struct.patch")
-    ];
+  nvidia-container-toolkit = import ./nvidia-container-toolkit.nix {
+    inherit (self) lib;
+    inherit (self.pkgs)
+      glibc fetchFromGitLab makeWrapper buildGoPackage
+      linkFarm writeShellScript
+      libnvidia-container;
 
-    postPatch = (oldAttrs.postPatch or "") + ''
-      sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" src/common.h
-    '';
-
-    postInstall = 
-    let
-      inherit (super.pkgs.addOpenGLRunpath) driverLink;
-      libraryPath = self.lib.makeLibraryPath [ 
-        "$out"
-        driverLink
-        "${driverLink}-32"
-      ];
-      binPath = self.lib.makeBinPath [
-        (self.lib.getBin self.pkgs.glibc) # for ldconfig in preStart
-        (self.lib.getBin unpatched-nvidia-driver)
-        self.pkgs.cudaPackages.fabricmanager
-      ];
-    in
-    ''
-      remove-references-to -t "${self.pkgs.go}" $out/lib/libnvidia-container-go.so.1.9.0
-      wrapProgram $out/bin/nvidia-container-cli --prefix LD_LIBRARY_PATH : ${libraryPath} \
-        --set PATH ${binPath}
-    '';
-  });
-
-  nvidia-container-runtime = (callPackage (virtualization + "/nvidia-container-runtime") {
-    inherit (super) lib;
-    inherit (super.pkgs) fetchFromGitHub buildGoPackage makeWrapper linkFarm writeShellScript glibc;
     containerRuntimePath = "runc";
-    configTemplate = ./config.toml;
-  }).overrideAttrs (oldAttrs: {
-    version = "3.5.0";
-  });
-
-  nvidia-container-toolkit = (callPackage (virtualization + "/nvidia-container-toolkit") {
-    inherit (super) lib;
-    inherit (super.pkgs) fetchFromGitHub buildGoModule makeWrapper;
-    inherit (self) nvidia-container-runtime;
-  }).overrideAttrs (oldAttrs: {
-    version = "1.13.1";
-    src = oldAttrs.src // {
-      rev = "v1.13.1";
-      sha256 = "sha256-QBV0l/pvBSex5IHS9duVPyLW9l27IhyGQysd1b5SpWQ=";
-    };
-
-    vendorSha256 = "";
-
-    # postPatch = (oldAttrs.postPatch or "") + ''
-    #   sed -i "s@/etc/ld.so.cache@/tmp/ld.so.cache@" internal/ldcache/ldcache.go
-    # '';
-  });
+    configTemplate = "./config.toml";
+  };
 
   nvidia-k3s = self.pkgs.symlinkJoin {
     name = "nvidia-k3s";
     paths = [
       self.libnvidia-container
       self.nvidia-container-toolkit
-      self.nvidia-container-runtime
     ];
   };
 }
