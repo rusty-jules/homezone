@@ -28,13 +28,13 @@ let
 in
 buildGoPackage rec {
   pname = "container-toolkit/container-toolkit";
-  version = "1.13.1";
+  version = "1.12.1";
 
   src = fetchFromGitLab {
     owner = "nvidia";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-RPH353pnGHBvbunFgiiPgQIfeXKLCkIIO2Cz6+Qp8AU=";
+    sha256 = "0vb2921fq5c74knjvb34zfl19xyvvm8x6d1gxdrvwd5qhhykgsz2";
   };
 
   goPackagePath = "github.com/NVIDIA/nvidia-container-toolkit";
@@ -56,11 +56,6 @@ buildGoPackage rec {
       go/src/github.com/NVIDIA/nvidia-container-toolkit/internal/ldcache/ldcache.go \
       go/src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-ctk/hook/update-ldcache/update-ldcache.go \
 
-    sed -i "s@/usr/lib/x86_64-linux-gnu@${unpatched-nvidia-driver}/lib@" \
-      go/src/github.com/NVIDIA/nvidia-container-toolkit/internal/discover/graphics.go
-
-    # add nvidia-driver to the cuda lib search path
-    sed -i '/WithSearchPaths(/a \\t\t"/${unpatched-nvidia-driver}/lib",' go/src/github.com/NVIDIA/nvidia-container-toolkit/internal/lookup/cuda/cuda.go
   '';
 
   postInstall =
