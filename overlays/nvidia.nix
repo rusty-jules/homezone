@@ -30,9 +30,11 @@ in
   nvidia-container-toolkit = import ./nvidia-container-toolkit.nix {
     inherit (self) lib;
     inherit (self.pkgs)
+      addOpenGLRunpath
       glibc fetchFromGitLab makeWrapper buildGoPackage
       linkFarm writeShellScript
       libnvidia-container;
+    inherit unpatched-nvidia-driver;
 
     containerRuntimePath = "runc";
     configTemplate = ./config.toml;
