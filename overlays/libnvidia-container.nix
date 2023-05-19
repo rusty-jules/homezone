@@ -37,7 +37,7 @@ stdenv.mkDerivation rec {
     owner = "NVIDIA";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0byfqygv0dxc87lhxgv09in2mrxiqg1r3cll2wif0kkflcbcg6xz";
+    sha256 = "sha256-Z+B1q1D8ub6/XOwBeB0Ebyx/lF8VVmRTLsfFo9whzcE=";
   };
 
   patches = [

@@ -34,7 +34,7 @@ buildGoPackage rec {
     owner = "nvidia";
     repo = pname;
     rev = "v${version}";
-    sha256 = "0vb2921fq5c74knjvb34zfl19xyvvm8x6d1gxdrvwd5qhhykgsz2";
+    sha256 = "sha256-yEeT6dkwYFaOkiKU1At44PHBs9huxDLFWtseC75F7WA=";
   };
 
   goPackagePath = "github.com/NVIDIA/nvidia-container-toolkit";
