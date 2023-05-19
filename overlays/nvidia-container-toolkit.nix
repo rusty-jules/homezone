@@ -39,7 +39,7 @@ buildGoPackage rec {
 
   goPackagePath = "github.com/NVIDIA/nvidia-container-toolkit";
 
-  ldflags = [ "-s" "-w" ];
+  ldflags = [ "-s" "-w" "-extldflags" "'-L${unpatched-nvidia-driver}/lib -lcuda'" ];
 
   nativeBuildInputs = [ makeWrapper ];
 
@@ -55,13 +55,12 @@ buildGoPackage rec {
     sed -i -e "s@/etc/ld.so.cache@/tmp/ld.so.cache@" -e "s@/etc/ld.so.conf@/tmp/ld.so.conf@" \
       go/src/github.com/NVIDIA/nvidia-container-toolkit/internal/ldcache/ldcache.go \
       go/src/github.com/NVIDIA/nvidia-container-toolkit/cmd/nvidia-ctk/hook/update-ldcache/update-ldcache.go \
-
   '';
 
   postInstall =
   let
     inherit (addOpenGLRunpath) driverLink;
-    libraryPath = lib.makeLibraryPath [ "$out" driverLink "${driverLink}-32" ];
+    libraryPath = lib.makeLibraryPath [ "$out" driverLink "${driverLink}-32" unpatched-nvidia-driver ];
   in
   ''
     mkdir -p $out/etc/nvidia-container-runtime

@@ -17,7 +17,7 @@ log-level = "debug"
 # Specify the runtimes to consider. This list is processed in order and the PATH
 # searched for matching executables unless the entry is an absolute path.
 runtimes = [
-	"@containerRuntimePath@",
+	"runc",
 ]
 
 mode = "auto"
