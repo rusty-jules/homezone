@@ -5,11 +5,11 @@
   stream_server_address = "127.0.0.1"
   stream_server_port = "10010"
 
-# added for gpu
-	enable_selinux = false
+	# added for gpu
+	enable_selinux = {{ .NodeConfig.SELinux }}
 	enable_unprivileged_ports = true
 	enable_unprivileged_icmp = true
-# end added for gpu
+	# end added for gpu
 
 {{- if .IsRunningInUserNS }}
   disable_cgroup = true
@@ -27,29 +27,27 @@
   conf_dir = "{{ .NodeConfig.AgentConfig.CNIConfDir }}"
 {{end}}
 
-# https://github.com/k3s-io/k3s/issues/4391#issuecomment-1202986597
-# [plugins.cri.containerd]
-# 	snapshotter = "overlayfs"
-# 	disable_snapshot_annotations= = true
-[plugins."io.containerd.grpc.v1.cri".containerd]
-	default_runtime_name = "containerd"
+[plugins.cri.containerd]
+	default_runtime_name = "runc"
+
+	# https://github.com/k3s-io/k3s/issues/4391#issuecomment-1202986597
+	snapshotter = "overlayfs"
+	disable_snapshot_annotations = true
 
 [plugins.cri.containerd.runtimes.runc]
   # ---- changed from 'io.containerd.runc.v2' for GPU support
   # ---- JA: changed back because https://github.com/k3s-io/k3s/blob/9bcfac8b8811919591719a497aa7204a96dc1df1/pkg/agent/containerd/nvidia.go#L33
   runtime_type = "io.containerd.runc.v2"
-[plugins.cri.containerd.runtime.runc.options]
-	SystemdCgroup = true
 
 # ---- added for GPU support
-[plugins.cri.containerd.runtimes."nvidia"]
+[plugins.cri.containerd.runtimes.nvidia]
 	runtime_type = "io.containerd.runc.v2"
 	runtime_root = ""
 	runtime_engine = ""
 	privileged_without_host_devices = false
-[plugins.cri.containerd.runtimes."nvidia".options]
+[plugins.cri.containerd.runtimes.nvidia.options]
 	BinaryName = "@nvidia-container-runtime@"
-# SystemdCgroup = true
+	SystemdCgroup = true
 
 {{ if .PrivateRegistryConfig }}
 {{ if .PrivateRegistryConfig.Mirrors }}

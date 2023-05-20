@@ -25,20 +25,6 @@ let
   '';
 in
 {
-
-  virtualisation.docker = {
-    enable = true;
-    enableNvidia = true;
-  };
-
-  environment.systemPackages = with pkgs; [
-    # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#id6
-    # https://itnext.io/enabling-nvidia-gpus-on-k3s-for-cuda-workloads-a11b96f967b0
-    nvidia-k3s
-    cudaPackages.fabricmanager
-    cudaPackages.cuda_nvml_dev
-  ];
-
   environment.etc = {
     "nvidia-container-runtime/config.toml" = {
       source = runtime-config;
