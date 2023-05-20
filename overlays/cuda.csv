@@ -1,0 +1,2 @@
+lib, @libcuda@, /usr/lib/x86_64-linux-gnu/libcuda.so.1
+lib, @libnvidia-ml@

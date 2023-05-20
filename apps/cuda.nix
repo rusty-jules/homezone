@@ -12,6 +12,8 @@ let
     cudaPackages.fabricmanager
   ];
 
+  nvidia-version = builtins.elemAt (builtins.split "-" unpatched-nvidia-driver.version) 0;
+
   runtime-config = pkgs.runCommandNoCC "config.toml" {
     src = ../overlays/config.toml;
   } ''
@@ -23,11 +25,24 @@ let
     substituteInPlace $out \
       --subst-var-by container-cli-path "PATH=${lib.makeBinPath nvidia-pkgs}"
   '';
+
+  cuda-libs = pkgs.runCommandNoCC "cuda.csv" {
+    src = ../overlays/cuda.csv;
+  } ''
+    cp $src $out
+    substituteInPlace $out \
+      --subst-var-by libcuda "${unpatched-nvidia-driver}/lib/libcuda.so.${builtins.elemAt (builtins.split "-" unpatched-nvidia-driver.version) 0}" \
+      --subst-var-by libnvidia-ml "${unpatched-nvidia-driver}/lib/libnvidia-ml.so.${nvidia-version}"
+  '';
 in
 {
   environment.etc = {
     "nvidia-container-runtime/config.toml" = {
       source = runtime-config;
+      mode = "0600";
+    };
+    "nvidia-container-runtime/host-files-for-container.d/cuda.csv" = {
+      source = cuda-libs;
       mode = "0600";
     };
   };
