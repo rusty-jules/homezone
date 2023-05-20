@@ -12,8 +12,6 @@ let
     cudaPackages.fabricmanager
   ];
 
-  nvidia-version = builtins.elemAt (builtins.split "-" unpatched-nvidia-driver.version) 0;
-
   runtime-config = pkgs.runCommandNoCC "config.toml" {
     src = ../overlays/config.toml;
   } ''
@@ -25,24 +23,11 @@ let
     substituteInPlace $out \
       --subst-var-by container-cli-path "PATH=${lib.makeBinPath nvidia-pkgs}"
   '';
-
-  cuda-libs = pkgs.runCommandNoCC "cuda.csv" {
-    src = ../overlays/cuda.csv;
-  } ''
-    cp $src $out
-    substituteInPlace $out \
-      --subst-var-by libcuda "${unpatched-nvidia-driver}/lib/libcuda.so.${builtins.elemAt (builtins.split "-" unpatched-nvidia-driver.version) 0}" \
-      --subst-var-by libnvidia-ml "${unpatched-nvidia-driver}/lib/libnvidia-ml.so.${nvidia-version}"
-  '';
 in
 {
   environment.etc = {
     "nvidia-container-runtime/config.toml" = {
       source = runtime-config;
-      mode = "0600";
-    };
-    "nvidia-container-runtime/host-files-for-container.d/cuda.csv" = {
-      source = cuda-libs;
       mode = "0600";
     };
   };
@@ -65,23 +50,10 @@ in
   # Required to keep GPU awake for runtime
   hardware.nvidia.nvidiaPersistenced = true;
 
-  # needed for ldconfig files
-  # nvidia-container-cli was using the root /tmp/ld.conf.so anyways...
-  # systemd.services.k3s.serviceConfig.PrivateTmp = true;
-
   # add nvidia pkgs to k3s PATH
   systemd.services.k3s.path = nvidia-pkgs;
-  # add the libraries to PATH for the nvidia-driver-plugin to discover (which does a dynamic load)
-  # https://github.com/NVIDIA/go-nvml/blob/6671dd5b56ed77ffd35b703c7694f63cfe01317f/pkg/dl/dl.go#L55
-  # systemd.services.k3s.environment = {
-  #   LD_LIBRARY_PATH =
-  #     let inherit (pkgs.addOpenGLRunpath) driverLink;
-  #     in
-  #     lib.makeLibraryPath [ unpatched-nvidia-driver driverLink "${driverLink}-32" ];
-  # };
 
-  # FIXME: this resulted in a systemd unit stop crash loop
-  ## here we can initialize the ld cache that nvidia requires
+  # here we can initialize the ld cache that nvidia requires
   # https://discourse.nixos.org/t/using-nvidia-container-runtime-with-containerd-on-nixos/27865/6
   systemd.services.k3s.preStart = ''
     rm -rf /tmp/nvidia-libs
