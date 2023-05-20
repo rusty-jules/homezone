@@ -47,6 +47,7 @@ stdenv.mkDerivation rec {
     # path.
     #./libnvc-ldconfig-and-path-fixes.patch
     ./libnvidia-container-ldcache.patch
+    ./libnvc-ldcache-container-again.patch
 
     # fix bogus struct declaration
     # ./inline-c-struct.patch

@@ -1,0 +1,31 @@
+diff --git a/src/nvc_ldcache.c b/src/nvc_ldcache.c
+index db3b2f69..28e08d3b 100644
+--- a/src/nvc_ldcache.c
++++ b/src/nvc_ldcache.c
+@@ -356,6 +356,7 @@ int
+ nvc_ldcache_update(struct nvc_context *ctx, const struct nvc_container *cnt)
+ {
+         char **argv;
++        char **argv_container;
+         pid_t child;
+         int status;
+         bool drop_groups = true;
+@@ -402,11 +403,18 @@ nvc_ldcache_update(struct nvc_context *ctx, const struct nvc_container *cnt)
+                 if (limit_syscalls(&ctx->err) < 0)
+                         goto fail;
+ 
++                argv_container = (char * []){argv[0], "-f", "/etc/ld.so.conf", "-C", "/etc/ld.so.cache", cnt->cfg.libs_dir, cnt->cfg.libs32_dir, NULL};
+                 if (fd < 0)
+                         execve(argv[0], argv, (char * const []){NULL});
+                 else
+                         fexecve(fd, argv, (char * const []){NULL});
+                 error_set(&ctx->err, "process execution failed");
++                log_infof("executing %s again", argv_container[0]);
++                if (fd < 0)
++                        execve(argv_container[0], argv_container, (char * const []){NULL});
++                else
++                        fexecve(fd, argv_container, (char * const []){NULL});
++                error_set(&ctx->err, "process execution failed");
+          fail:
+                 log_errf("could not start %s: %s", argv[0], ctx->err.msg);
+                 (ctx->err.code == ENOENT) ? _exit(EXIT_SUCCESS) : _exit(EXIT_FAILURE);
