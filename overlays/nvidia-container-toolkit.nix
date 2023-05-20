@@ -39,7 +39,7 @@ buildGoPackage rec {
 
   goPackagePath = "github.com/NVIDIA/nvidia-container-toolkit";
 
-  ldflags = [ "-s" "-w" "-extldflags" "'-L${unpatched-nvidia-driver}/lib -lcuda'" ];
+  ldflags = [ "-s" "-w" "-extldflags" "'-L${unpatched-nvidia-driver}/lib -lcuda -lnvidia-ml'" ];
 
   nativeBuildInputs = [ makeWrapper ];
 
