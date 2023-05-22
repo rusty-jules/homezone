@@ -108,9 +108,11 @@ in
       };
       "nixery.registries.jables" = {
         ipv4 = jables.ipv4;
+        etherIp = jables.etherIp;
       };
       "zot.registry.jables" = {
         ipv4 = jables.ipv4;
+        etherIp = jables.etherIp;
       };
     };
   };
