@@ -32,16 +32,21 @@ in
   networking = {
     defaultGateway = {
       address = "192.168.1.1";
-      interface = currentHost.etherInterfaceName;
+      interface = currentHost.wifiInterfaceName;
     };
     interfaces = {
-      ${currentHost.wifiInterfaceName}.ipv4.routes = [{
-        options = {
-          scope = "global";
-          metric = "100";
-        };
+      ${currentHost.etherInterfaceName}.ipv4.routes = [{
+        options.scope = "global";
         address = "192.168.1.0";
         prefixLength = 24;
+        via = currentHost.etherIp;
+      }];
+      ${currentHost.wifiInterfaceName}.ipv4.routes = [{
+        options.scope = "global";
+        options.metric = "100";
+        address = "192.168.1.0";
+        prefixLength = 24;
+        via = currentHost.ipv4;
       }];
     };
   };
