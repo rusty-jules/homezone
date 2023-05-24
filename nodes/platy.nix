@@ -1,5 +1,8 @@
 { config, pkgs, lib, ... }:
 
+let
+  currentHost = config.networking.homezone.currentHost;
+in
 {
   imports = [
     ./platy-hardware.nix
@@ -40,26 +43,26 @@
 
   networking.defaultGateway = {
     address = "192.168.1.1";
-    interface = config.networking.homezone.currentHost.etherInterfaceName;
+    interface = currentHost.etherInterfaceName;
   };
 
-  networking.interfaces.${config.networking.homezone.currentHost.etherInterfaceName}.ipv4.routes = [
+  networking.interfaces.${currentHost.etherInterfaceName}.ipv4.routes = [
     {
       options.scope = "global";
       address = "192.168.1.0";
       prefixLength = 24;
-      via = config.networking.homezone.currentHost.etherIp;
+      via = currentHost.etherIp;
     }
   ];
 
-  networking.interfaces.${config.networking.homezone.currentHost.wifiInterfaceName}.ipv4.routes = [
+  networking.interfaces.${currentHost.wifiInterfaceName}.ipv4.routes = [
     {
       options.scope = "global";
       # lower the priority of the wifi interface for the 192.168.1.0/24 subnet
       options.metric = "100";
       address = "192.168.1.0";
       prefixLength = 24;
-      via = config.networking.homezone.currentHost.etherIp;
+      via = currentHost.etherIp;
     }
     {
       options.scope = "global";
@@ -67,26 +70,27 @@
       options.metric = "100";
       address = "192.168.1.0";
       prefixLength = 24;
-      via = config.networking.homezone.currentHost.ipv4;
+      via = currentHost.ipv4;
     }
   ];
 
+  systemd.services.platy-eth-network-mon =
   # script to restart the eth network interface if it goes down.
   # this is a platy-only issue with the eth adapter I guess.
   let
     restartEth = pkgs.writeScript "restart-eth.sh" ''
-      #!/bin/bash
+      #!${pkgs.stdenv.shell}
 
       RESTART_FILE="/etc/last-eth-restart"
       MINIMUM_RESTART_INTERVAL=300
       CHECK_INTERVAL=5
 
       while true; do
-        ping -c 1 belakay > /dev/null
+        ${pkgs.iputils}/bin/ping -c 1 belakay > /dev/null
 
         if [ $? -ne 0 ]; then
           # check it again
-          ping -c 1 belakay > /dev/null
+          ${pkgs.iputils}/bin/ping -c 1 belakay > /dev/null
 
           if [ $? -ne 0 ]; then
             CURRENT_TIME=$(date +%s)
@@ -94,27 +98,27 @@
             TIME_SINCE_LAST_RESTART=$((CURRENT_TIME - LAST_RESTART_TIME))
 
             if [ $TIME_SINCE_LAST_RESTART -ge $MINIMUM_RESTART_INTERVAL ]; then
-              echo "Network connection to belakay failed. Restarting ${etherInterfaceName}"
-              ip link set ${etherInterfaceName} down
-              ip link set ${etherInterfaceName} up
+              echo "Network connection to belakay failed. Restarting ${currentHost.etherInterfaceName}"
+              ${pkgs.iproute2}/bin/ip link set ${currentHost.etherInterfaceName} down
+              ${pkgs.iproute2}/bin/ip link set ${currentHost.etherInterfaceName} up
             else
               echo "Network connection failed but the last restart was less than 5 minutes ago. Skipping restart..."
             fi
-          do
+          fi
         fi
 
         sleep $CHECK_INTERVAL
       done
     '';
   in
-  systemd.service.restart-eth = {
+  lib.mkDefault {
     description = "Restart Ethernet";
-    script = ${restartEth};
+    script = "${restartEth}";
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      ExecStart = "${restartEth}";
+      ExecStart = lib.mkDefault "${restartEth}";
       User = "root";
       Restart = "always";
     };
