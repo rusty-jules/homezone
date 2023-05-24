@@ -71,6 +71,55 @@
     }
   ];
 
+  # script to restart the eth network interface if it goes down.
+  # this is a platy-only issue with the eth adapter I guess.
+  let
+    restartEth = pkgs.writeScript "restart-eth.sh" ''
+      #!/bin/bash
+
+      RESTART_FILE="/etc/last-eth-restart"
+      MINIMUM_RESTART_INTERVAL=300
+      CHECK_INTERVAL=5
+
+      while true; do
+        ping -c 1 belakay > /dev/null
+
+        if [ $? -ne 0 ]; then
+          # check it again
+          ping -c 1 belakay > /dev/null
+
+          if [ $? -ne 0 ]; then
+            CURRENT_TIME=$(date +%s)
+            LAST_RESTART_TIME=$(cat $RESTART_FILE 2>/dev/null || echo 0)
+            TIME_SINCE_LAST_RESTART=$((CURRENT_TIME - LAST_RESTART_TIME))
+
+            if [ $TIME_SINCE_LAST_RESTART -ge $MINIMUM_RESTART_INTERVAL ]; then
+              echo "Network connection to belakay failed. Restarting ${etherInterfaceName}"
+              ip link set ${etherInterfaceName} down
+              ip link set ${etherInterfaceName} up
+            else
+              echo "Network connection failed but the last restart was less than 5 minutes ago. Skipping restart..."
+            fi
+          do
+        fi
+
+        sleep $CHECK_INTERVAL
+      done
+    '';
+  in
+  systemd.service.restart-eth = {
+    description = "Restart Ethernet";
+    script = ${restartEth};
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = "${restartEth}";
+      User = "root";
+      Restart = "always";
+    };
+  };
+
   system = {
     copySystemConfiguration = false;
     stateVersion = "22.11";
