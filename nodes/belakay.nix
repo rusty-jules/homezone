@@ -29,6 +29,9 @@ in
     root.openssh.authorizedKeys.keys = [ keys.homezone ];
   };
 
+  # This selects the Nvidia Driver version, GTX 1070 is not yet legacy!
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+
   networking = {
     defaultGateway = {
       address = "192.168.1.1";

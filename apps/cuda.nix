@@ -25,6 +25,7 @@ let
   '';
 in
 {
+  environment.systemPackages = with pkgs; [ nvidia-k3s ];
   environment.etc = {
     "nvidia-container-runtime/config.toml" = {
       source = runtime-config;
@@ -45,8 +46,6 @@ in
     setLdLibraryPath = true;
   };
 
-  # This selects the Nvidia Driver version, GTX 1070 is not yet legacy!
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   # Required to keep GPU awake for runtime
   hardware.nvidia.nvidiaPersistenced = true;
 

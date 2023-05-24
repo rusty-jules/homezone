@@ -46,7 +46,7 @@ in
 
   # The tmpl needs the full path to the container-shim
   # https://github.com/k3s-io/k3s/issues/6518
-  system.activationScripts.writeContainerdConfigTemplate = lib.mkIf (config.networking.hostName == "belakay") (lib.stringAfter [ "var" ] ''
+  system.activationScripts.writeContainerdConfigTemplate = lib.mkIf (builtins.elem config.networking.hostName [ "belakay" "ljesus" ]) (lib.stringAfter [ "var" ] ''
     cp ${containerdTemplate} /var/lib/rancher/k3s/agent/etc/containerd/config.toml.tmpl
   '');
 }

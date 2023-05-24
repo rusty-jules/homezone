@@ -11,6 +11,7 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "sdhci_pci" ];
   boot.initrd.kernelModules = [ ];
+  boot.blacklistedKernelModules = [ "nouveau" ];
   boot.kernelModules = [ "kvm-intel" "wl" "nvidia" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
   # required for broadcom-sta
