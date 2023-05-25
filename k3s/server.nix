@@ -8,5 +8,10 @@
     # starts of k3s (admittedly after a node crash) did not function
     # with this flag enabled
     #clusterInit = true;
+
+    # we apply this ourselves
+    extraFlags = toString [
+      "--disable=local-storage"
+    ];
   };
 }
