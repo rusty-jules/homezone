@@ -8,7 +8,8 @@
     serverAddr = lib.mkDefault "https://192.168.1.173:6443";
     extraFlags = toString [
       "--node-ip ${config.networking.homezone.currentHost.etherIp}"
-      "--disable=local-storage"
+      "-v=4" # debug
+      # "--disable=local-storage"
     ];
   };
 }
