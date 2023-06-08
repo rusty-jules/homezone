@@ -47,7 +47,7 @@ in
   networking = {
     defaultGateway = {
       address = "192.168.1.1";
-      interface = config.networking.homezone.currentHost.etherInterfaceName;
+      interface = config.networking.homezone.currentHost.wifiInterfaceName;
     };
 
     interfaces = {
