@@ -107,12 +107,16 @@ in
         ipv4 = "192.168.1.80";
       };
       "nixery.registries.jables" = {
-        ipv4 = jables.ipv4;
-        etherIp = jables.etherIp;
+        ipv4 = kables.ipv4;
+        etherIp = kables.etherIp;
       };
       "zot.registry.jables" = {
-        ipv4 = jables.ipv4;
-        etherIp = jables.etherIp;
+        ipv4 = kables.ipv4;
+        etherIp = kables.etherIp;
+      };
+      "homezone-syn-1" = {
+        ipv4 = "192.168.1.37";
+        etherIp = "192.168.1.37";
       };
     };
   };

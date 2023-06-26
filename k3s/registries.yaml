@@ -8,3 +8,6 @@ mirrors:
   nixery.registries:
     endpoint:
       - "http://nixery.registries.jables"
+  homezone.registry:
+    endpoint:
+      - "http://homezone-syn-1:5050"
