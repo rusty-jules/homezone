@@ -32,7 +32,7 @@
           fastConnection = true; # copy the entire closure to the node
           profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${hostname};
         };
-      }) [ "jables" "kables" "platy" "ljesus" "belakay" ]);
+      }) [ "kables" "platy" "ljesus" "belakay" ]); # "jables"
 
       checks =
         let
