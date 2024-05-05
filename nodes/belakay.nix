@@ -33,10 +33,8 @@ in
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
 
   networking = {
-    defaultGateway = {
-      address = "192.168.1.1";
-      interface = currentHost.wifiInterfaceName;
-    };
+    defaultGateway.interface = currentHost.wifiInterfaceName;
+
     interfaces = {
       ${currentHost.etherInterfaceName}.ipv4.routes = [{
         options.scope = "global";

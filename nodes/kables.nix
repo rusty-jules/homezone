@@ -33,11 +33,6 @@
     };
   };
 
-  networking.defaultGateway = {
-    address = "192.168.1.1";
-    interface = config.networking.homezone.currentHost.wifiInterfaceName;
-  };
-
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
   '';

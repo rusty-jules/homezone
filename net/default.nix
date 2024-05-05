@@ -56,7 +56,11 @@ in
       };
     };
 
-    defaultGateway = lib.mkDefault "192.168.1.1"; # default route and gateway required by k3s
+    defaultGateway = {
+      address = lib.mkDefault "192.168.1.254"; # default route and gateway required by k3s
+      interface = lib.mkDefault config.networking.homezone.currentHost.etherInterfaceName;
+    };
+
     nameservers = [ "1.1.1.1" "8.8.8.8" ];
 
     # "mapAttrsToList" which outputs something like

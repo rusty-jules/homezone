@@ -41,10 +41,7 @@ in
     upower.ignoreLid = true;
   };
 
-  networking.defaultGateway = {
-    address = "192.168.1.1";
-    interface = currentHost.etherInterfaceName;
-  };
+  networking.defaultGateway.interface = currentHost.etherInterfaceName;
 
   networking.interfaces.${currentHost.etherInterfaceName}.ipv4.routes = [
     {
